@@ -62,7 +62,11 @@ def sparsity_distribution(panel: pd.DataFrame) -> pd.DataFrame:
         sub = panel[panel["sparsity_tier"] == tier]
         rows.append({
             "sparsity_tier": tier,
+            # 「眾數分層」是描述個股的典型狀態；「曾進入該層」才是決定估計樣本的
+            # 數字——H2 在 dense 子樣本上估計，任何一週落在 dense 的個股都會貢獻
+            # 觀測。兩者都報告，避免用錯定義判斷可識別性。
             "n_tickers_modal": int((by_ticker == tier).sum()),
+            "n_tickers_any_week": int(sub["ticker"].nunique()),
             "n_ticker_weeks": len(sub),
             "share_of_panel": len(sub) / max(len(panel), 1),
             "mean_att": float(sub["att_all"].mean()) if len(sub) else np.nan,
@@ -141,10 +145,15 @@ def health_checks(panel: pd.DataFrame, universe: pd.DataFrame,
         f"{wc['corr_all_weekday']:.3f} vs {wc['corr_all_weekend']:.3f}",
         bool(wc["pattern_matches_paper"]), "§8.2")
 
-    n_dense = int(sparsity.loc[sparsity["sparsity_tier"] == "dense",
-                               "n_tickers_modal"].sum())
-    add("dense 檔數", "≥ 40 檔（否則 H2 無法識別，須觸發 Yahoo 備案）",
-        n_dense, n_dense >= 40, "§8.2")
+    # 可識別性由「進入 dense 估計樣本的個股數」決定，不是眾數分層
+    n_dense_any = int(sparsity.loc[sparsity["sparsity_tier"] == "dense",
+                                   "n_tickers_any_week"].sum())
+    n_dense_modal = int(sparsity.loc[sparsity["sparsity_tier"] == "dense",
+                                     "n_tickers_modal"].sum())
+    add("dense 檔數（進入估計樣本）",
+        "≥ 40 檔（否則 H2 無法識別，須觸發 Yahoo 備案）",
+        n_dense_any, n_dense_any >= 40, "§8.2")
+    add("dense 檔數（眾數分層，參考）", "無門檻，供描述用", n_dense_modal, True, "§8.2")
 
     if screening is not None:
         n_a = int((screening["match_quality_tier"] == "A_clean").sum())

@@ -124,6 +124,7 @@ tests/
 
 | 文件 | 用途 |
 |---|---|
+| [`FINDINGS.md`](FINDINGS.md) | 首輪結果摘要（全部為 diagnostic）與下一步建議 |
 | [`LIMITATIONS.md`](LIMITATIONS.md) | **交付門檻**：研究限制與命名紀律 |
 | [`PROJECT.md`](PROJECT.md) | 研究設計與變數定義的單一真相來源 |
 | `PRD.md` | 產品需求文件（不進版控） |
