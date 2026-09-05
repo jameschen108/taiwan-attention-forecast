@@ -79,10 +79,16 @@ def _month_range(first: str, last: str) -> list[str]:
     return out
 
 
-def audit_market(raw_root: Path, universe: pd.DataFrame, audit_dir: Path) -> dict:
-    """FinMind 抓取結果的逐檔涵蓋率。缺檔明確列出，不得當成零。"""
+def audit_market(raw_root: Path, universe: pd.DataFrame, audit_dir: Path,
+                 interim: Path = Path("data/interim")) -> dict:
+    """實際使用來源的涵蓋率。缺檔明確列出，不得當成零。
+
+    三大法人與除權息**不使用 FinMind**：前者用既有 TWSE T86 封存（涵蓋主樣本全期
+    且不受 API 額度限制），後者用 TWSE 全市場區間端點。FinMind 的對應目錄若為空，
+    不是資料缺口，而是來源選擇——因此只稽核實際進入管線的來源。
+    """
     rows = []
-    for kind in ("price", "inst", "dividend", "shareholding"):
+    for kind in ("price", "shareholding"):
         kdir = raw_root / kind
         if not kdir.exists():
             continue
@@ -103,14 +109,41 @@ def audit_market(raw_root: Path, universe: pd.DataFrame, audit_dir: Path) -> dic
                 "first": min(dates) if dates else "",
                 "last": max(dates) if dates else "",
             })
+    tickers = set(universe["ticker"].astype(str))
+    summary: dict = {}
+
+    # 三大法人：TWSE T86 封存
+    t86 = interim / "market_daily.parquet"
+    if t86.exists():
+        daily = pd.read_parquet(t86, columns=["ticker", "date", "inst_buy"])
+        have = daily.dropna(subset=["inst_buy"])
+        for ticker in sorted(tickers):
+            sub = have[have["ticker"] == ticker]
+            rows.append({
+                "kind": "institutional(T86)", "ticker": ticker,
+                "status": "OK" if len(sub) else "MISSING", "n_rows": len(sub),
+                "first": str(sub["date"].min().date()) if len(sub) else "",
+                "last": str(sub["date"].max().date()) if len(sub) else "",
+            })
+
+    # 除權息：TWSE 全市場區間端點
+    ex = interim / "ex_rights.csv"
+    if ex.exists():
+        exd = pd.read_csv(ex, dtype={"ticker": str})
+        n_uni = exd[exd["ticker"].isin(tickers)]
+        summary["exrights_events_total"] = len(exd)
+        summary["exrights_events_in_universe"] = len(n_uni)
+        summary["exrights_tickers_in_universe"] = int(n_uni["ticker"].nunique())
+
     cov = pd.DataFrame(rows)
     audit_dir.mkdir(parents=True, exist_ok=True)
     cov.to_csv(audit_dir / "market_coverage.csv", index=False)
-    summary = {}
     for kind, g in cov.groupby("kind"):
         summary[f"{kind}_ok"] = int((g["status"] == "OK").sum())
         summary[f"{kind}_missing"] = int((g["status"] == "MISSING").sum())
         summary[f"{kind}_empty"] = int((g["status"] == "EMPTY").sum())
+    summary["note_sources"] = ("三大法人=TWSE T86 封存；除權息=TWSE TWT49U；"
+                               "FinMind 僅供價格與股權分散備援")
     return summary
 
 
