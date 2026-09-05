@@ -1,0 +1,3119 @@
+provenance:
+  source: 既有爬蟲產物 data/universe_267.csv
+  selection_rule: 每個 TWSE 產業別依證券代號升冪取前 10 檔；不足 10 檔者取全部
+  n_tickers: 267
+  n_sectors: 28
+  note: 本清單不是指數、不是市值前 267 大、不具市場代表性（PRD §1.4、§11）
+collision_groups:
+  統一系:
+  - '1216'
+  - '2912'
+  台塑系:
+  - '1301'
+  - '6505'
+  中鋼系:
+  - '2002'
+  - '2013'
+  - '2014'
+  東和系:
+  - '1414'
+  - '2006'
+  三商系:
+  - '2905'
+  - '2427'
+  永豐系:
+  - '1907'
+  - '6790'
+  華新系:
+  - '1605'
+  中化系:
+  - '1762'
+  台亞台聚:
+  - '2340'
+  - '1304'
+  長榮系:
+  - '2603'
+code_only_tickers:
+- '1108'
+- '1109'
+- '1203'
+- '1210'
+- '1303'
+- '1402'
+- '1414'
+- '1418'
+- '1423'
+- '1432'
+- '1471'
+- '1506'
+- '1514'
+- '1515'
+- '1517'
+- '1609'
+- '1611'
+- '1615'
+- '1736'
+- '2010'
+- '2012'
+- '2101'
+- '2390'
+- '2423'
+- '2430'
+- '2468'
+- '2471'
+- '2704'
+- '2705'
+- '2706'
+- '2707'
+- '2723'
+- '2727'
+- '2762'
+- '2845'
+- '2903'
+- '2908'
+- '2910'
+- '2911'
+- '2912'
+- '2913'
+- '2915'
+- '3029'
+- '3130'
+- '4994'
+- '6902'
+- '6923'
+- '7722'
+- '8454'
+- '9911'
+- '9937'
+code_only_reason:
+  '1108': 幸福
+  '1109': 信大
+  '1210': 大成
+  '1203': 味王
+  '1414': 東和
+  '1418': 東華
+  '1423': 利華
+  '1506': 正道
+  '1514': 亞力
+  '1515': 力山
+  '1517': 利奇
+  '1471': 首利
+  '1615': 大山
+  '1611': 中電
+  '1609': 大亞
+  '2010': 春源
+  '2012': 春雨
+  '6923': 中台
+  '4994': 傳奇
+  '3029': 零壹
+  '3130': 一零四
+  '9937': 全國
+  '2706': 第一店
+  '2762': 世界健身-KY
+  '2471': 資通
+  '2468': 華經
+  '2390': 云辰
+  '2423': 固緯
+  '2912': 統一超
+  '8454': 富邦媒
+  '2727': 王品
+  '2723': 美食-KY
+  '2707': 晶華
+  '2704': 國賓
+  '2705': 六福
+  '2430': 燦坤
+  '9911': 櫻花
+  '2911': 麗嬰房
+  '2903': 遠百
+  '2908': 特力
+  '2910': 統領
+  '1432': 大魯閣
+  '1736': 喬山
+  '7722': LINEPAY
+  '6902': GOGOLOOK
+  '1303': 南亞
+  '2101': 南港
+  '1402': 遠東新
+  '2845': 遠東銀
+  '2915': 潤泰全
+  '2913': 農林
+tickers:
+  '1101':
+    name_short: 台泥
+    sector: 水泥
+    venue: TWSE
+    listing_date: '1962-02-09'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 台泥
+      match_mode: name_with_context
+      priority: 2
+  '1102':
+    name_short: 亞泥
+    sector: 水泥
+    venue: TWSE
+    listing_date: '1962-06-08'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 亞泥
+      match_mode: name_with_context
+      priority: 2
+  '1103':
+    name_short: 嘉泥
+    sector: 水泥
+    venue: TWSE
+    listing_date: '1969-11-14'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 嘉泥
+      match_mode: name_with_context
+      priority: 2
+  '1104':
+    name_short: 環泥
+    sector: 水泥
+    venue: TWSE
+    listing_date: '1971-02-01'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 環泥
+      match_mode: name_with_context
+      priority: 2
+  '1108':
+    name_short: 幸福
+    sector: 水泥
+    venue: TWSE
+    listing_date: '1990-06-06'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 幸福
+      match_mode: name_with_context
+      priority: 2
+  '1109':
+    name_short: 信大
+    sector: 水泥
+    venue: TWSE
+    listing_date: '1991-12-05'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 信大
+      match_mode: name_with_context
+      priority: 2
+  '1110':
+    name_short: 東泥
+    sector: 水泥
+    venue: TWSE
+    listing_date: '1994-10-22'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 東泥
+      match_mode: name_with_context
+      priority: 2
+  '1201':
+    name_short: 味全
+    sector: 食品
+    venue: TWSE
+    listing_date: '1962-02-09'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 味全
+      match_mode: name_with_context
+      priority: 2
+  '1203':
+    name_short: 味王
+    sector: 食品
+    venue: TWSE
+    listing_date: '1964-08-24'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 味王
+      match_mode: name_with_context
+      priority: 2
+  '1210':
+    name_short: 大成
+    sector: 食品
+    venue: TWSE
+    listing_date: '1978-05-20'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 大成
+      match_mode: name_with_context
+      priority: 2
+  '1213':
+    name_short: 大飲
+    sector: 食品
+    venue: TWSE
+    listing_date: '1981-04-10'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 大飲
+      match_mode: name_with_context
+      priority: 2
+  '1215':
+    name_short: 卜蜂
+    sector: 食品
+    venue: TWSE
+    listing_date: '1987-07-27'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 卜蜂
+      match_mode: name_with_context
+      priority: 2
+  '1216':
+    name_short: 統一
+    sector: 食品
+    venue: TWSE
+    listing_date: '1987-12-28'
+    is_ky: false
+    collision_group: 統一系
+    variants:
+    - text: 統一
+      match_mode: name_with_context
+      priority: 2
+  '1217':
+    name_short: 愛之味
+    sector: 食品
+    venue: TWSE
+    listing_date: '1989-10-28'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 愛之味
+      match_mode: name
+      priority: 3
+  '1218':
+    name_short: 泰山
+    sector: 食品
+    venue: TWSE
+    listing_date: '1989-11-11'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 泰山
+      match_mode: name_with_context
+      priority: 2
+  '1219':
+    name_short: 福壽
+    sector: 食品
+    venue: TWSE
+    listing_date: '1990-12-01'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 福壽
+      match_mode: name_with_context
+      priority: 2
+  '1220':
+    name_short: 台榮
+    sector: 食品
+    venue: TWSE
+    listing_date: '1991-11-20'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 台榮
+      match_mode: name_with_context
+      priority: 2
+  '1301':
+    name_short: 台塑
+    sector: 塑膠
+    venue: TWSE
+    listing_date: '1964-07-27'
+    is_ky: false
+    collision_group: 台塑系
+    variants:
+    - text: 台塑
+      match_mode: name_with_context
+      priority: 2
+  '1303':
+    name_short: 南亞
+    sector: 塑膠
+    venue: TWSE
+    listing_date: '1967-11-15'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 南亞
+      match_mode: name_with_context
+      priority: 2
+  '1304':
+    name_short: 台聚
+    sector: 塑膠
+    venue: TWSE
+    listing_date: '1972-05-20'
+    is_ky: false
+    collision_group: 台亞台聚
+    variants:
+    - text: 台聚
+      match_mode: name
+      priority: 2
+  '1305':
+    name_short: 華夏
+    sector: 塑膠
+    venue: TWSE
+    listing_date: '1973-03-05'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 華夏
+      match_mode: name_with_context
+      priority: 2
+  '1307':
+    name_short: 三芳
+    sector: 塑膠
+    venue: TWSE
+    listing_date: '1985-11-23'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 三芳
+      match_mode: name_with_context
+      priority: 2
+  '1308':
+    name_short: 亞聚
+    sector: 塑膠
+    venue: TWSE
+    listing_date: '1986-06-20'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 亞聚
+      match_mode: name_with_context
+      priority: 2
+  '1309':
+    name_short: 台達化
+    sector: 塑膠
+    venue: TWSE
+    listing_date: '1986-06-27'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 台達化
+      match_mode: name
+      priority: 3
+  '1310':
+    name_short: 台苯
+    sector: 塑膠
+    venue: TWSE
+    listing_date: '1987-08-06'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 台苯
+      match_mode: name_with_context
+      priority: 2
+  '1312':
+    name_short: 國喬
+    sector: 塑膠
+    venue: TWSE
+    listing_date: '1988-12-21'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 國喬
+      match_mode: name_with_context
+      priority: 2
+  '1313':
+    name_short: 聯成
+    sector: 塑膠
+    venue: TWSE
+    listing_date: '1989-03-27'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 聯成
+      match_mode: name_with_context
+      priority: 2
+  '1319':
+    name_short: 東陽
+    sector: 汽車
+    venue: TWSE
+    listing_date: '1994-12-12'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 東陽
+      match_mode: name_with_context
+      priority: 2
+  '1338':
+    name_short: 廣華-KY
+    sector: 汽車
+    venue: TWSE
+    listing_date: '2012-12-19'
+    is_ky: true
+    collision_group: null
+    variants:
+    - text: 廣華
+      match_mode: name_with_context
+      priority: 2
+    - text: 廣華-KY
+      match_mode: name_with_context
+      priority: 5
+  '1339':
+    name_short: 昭輝
+    sector: 汽車
+    venue: TWSE
+    listing_date: '2012-04-24'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 昭輝
+      match_mode: name_with_context
+      priority: 2
+  '1512':
+    name_short: 瑞利
+    sector: 汽車
+    venue: TWSE
+    listing_date: '1994-01-28'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 瑞利
+      match_mode: name_with_context
+      priority: 2
+  '1521':
+    name_short: 大億
+    sector: 汽車
+    venue: TWSE
+    listing_date: '1997-10-06'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 大億
+      match_mode: name_with_context
+      priority: 2
+  '1522':
+    name_short: 堤維西
+    sector: 汽車
+    venue: TWSE
+    listing_date: '1997-10-06'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 堤維西
+      match_mode: name
+      priority: 3
+  '1524':
+    name_short: 耿鼎
+    sector: 汽車
+    venue: TWSE
+    listing_date: '1998-10-30'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 耿鼎
+      match_mode: name_with_context
+      priority: 2
+  '1525':
+    name_short: 江申
+    sector: 汽車
+    venue: TWSE
+    listing_date: '1999-05-15'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 江申
+      match_mode: name_with_context
+      priority: 2
+  '1533':
+    name_short: 車王電
+    sector: 汽車
+    venue: TWSE
+    listing_date: '2001-04-06'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 車王電
+      match_mode: name
+      priority: 3
+  '1536':
+    name_short: 和大
+    sector: 汽車
+    venue: TWSE
+    listing_date: '2001-09-17'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 和大
+      match_mode: name_with_context
+      priority: 2
+  '1402':
+    name_short: 遠東新
+    sector: 紡織
+    venue: TWSE
+    listing_date: '1967-04-14'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 遠東新
+      match_mode: name
+      priority: 3
+  '1409':
+    name_short: 新纖
+    sector: 紡織
+    venue: TWSE
+    listing_date: '1973-08-31'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 新纖
+      match_mode: name_with_context
+      priority: 2
+  '1410':
+    name_short: 南染
+    sector: 紡織
+    venue: TWSE
+    listing_date: '1973-10-18'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 南染
+      match_mode: name_with_context
+      priority: 2
+  '1413':
+    name_short: 宏洲
+    sector: 紡織
+    venue: TWSE
+    listing_date: '1975-12-23'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 宏洲
+      match_mode: name_with_context
+      priority: 2
+  '1414':
+    name_short: 東和
+    sector: 紡織
+    venue: TWSE
+    listing_date: '1976-02-02'
+    is_ky: false
+    collision_group: 東和系
+    variants:
+    - text: 東和
+      match_mode: name_with_context
+      priority: 2
+  '1417':
+    name_short: 嘉裕
+    sector: 紡織
+    venue: TWSE
+    listing_date: '1976-12-28'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 嘉裕
+      match_mode: name_with_context
+      priority: 2
+  '1418':
+    name_short: 東華
+    sector: 紡織
+    venue: TWSE
+    listing_date: '1977-02-14'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 東華
+      match_mode: name_with_context
+      priority: 2
+  '1419':
+    name_short: 新紡
+    sector: 紡織
+    venue: TWSE
+    listing_date: '1977-03-14'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 新紡
+      match_mode: name_with_context
+      priority: 2
+  '1423':
+    name_short: 利華
+    sector: 紡織
+    venue: TWSE
+    listing_date: '1979-04-02'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 利華
+      match_mode: name_with_context
+      priority: 2
+  '1434':
+    name_short: 福懋
+    sector: 紡織
+    venue: TWSE
+    listing_date: '1985-12-24'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 福懋
+      match_mode: name_with_context
+      priority: 2
+  '1432':
+    name_short: 大魯閣
+    sector: 運動休閒
+    venue: TWSE
+    listing_date: '1982-07-26'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 大魯閣
+      match_mode: name
+      priority: 3
+  '1598':
+    name_short: 岱宇
+    sector: 運動休閒
+    venue: TWSE
+    listing_date: '2016-09-20'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 岱宇
+      match_mode: name_with_context
+      priority: 2
+  '1736':
+    name_short: 喬山
+    sector: 運動休閒
+    venue: TWSE
+    listing_date: '2003-01-09'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 喬山
+      match_mode: name_with_context
+      priority: 2
+  '2762':
+    name_short: 世界健身-KY
+    sector: 運動休閒
+    venue: TWSE
+    listing_date: '2024-01-24'
+    is_ky: true
+    collision_group: null
+    variants:
+    - text: 世界健身
+      match_mode: name
+      priority: 4
+    - text: 世界健身-KY
+      match_mode: name
+      priority: 7
+  '4536':
+    name_short: 拓凱
+    sector: 運動休閒
+    venue: TWSE
+    listing_date: '2013-10-09'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 拓凱
+      match_mode: name_with_context
+      priority: 2
+  '5306':
+    name_short: 桂盟
+    sector: 運動休閒
+    venue: TWSE
+    listing_date: '2022-03-08'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 桂盟
+      match_mode: name_with_context
+      priority: 2
+  '6670':
+    name_short: 復盛應用
+    sector: 運動休閒
+    venue: TWSE
+    listing_date: '2018-12-18'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 復盛應用
+      match_mode: name
+      priority: 4
+  '6768':
+    name_short: 志強-KY
+    sector: 運動休閒
+    venue: TWSE
+    listing_date: '2021-04-22'
+    is_ky: true
+    collision_group: null
+    variants:
+    - text: 志強
+      match_mode: name_with_context
+      priority: 2
+    - text: 志強-KY
+      match_mode: name_with_context
+      priority: 5
+  '6890':
+    name_short: 來億-KY
+    sector: 運動休閒
+    venue: TWSE
+    listing_date: '2024-06-12'
+    is_ky: true
+    collision_group: null
+    variants:
+    - text: 來億
+      match_mode: name_with_context
+      priority: 2
+    - text: 來億-KY
+      match_mode: name_with_context
+      priority: 5
+  '6965':
+    name_short: 中傑-KY
+    sector: 運動休閒
+    venue: TWSE
+    listing_date: '2025-03-07'
+    is_ky: true
+    collision_group: null
+    variants:
+    - text: 中傑
+      match_mode: name_with_context
+      priority: 2
+    - text: 中傑-KY
+      match_mode: name_with_context
+      priority: 5
+  '1471':
+    name_short: 首利
+    sector: 電子零組件
+    venue: TWSE
+    listing_date: '2000-03-06'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 首利
+      match_mode: name_with_context
+      priority: 2
+  '1582':
+    name_short: 信錦
+    sector: 電子零組件
+    venue: TWSE
+    listing_date: '2009-12-17'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 信錦
+      match_mode: name_with_context
+      priority: 2
+  '2059':
+    name_short: 川湖
+    sector: 電子零組件
+    venue: TWSE
+    listing_date: '2008-06-25'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 川湖
+      match_mode: name_with_context
+      priority: 2
+  '2308':
+    name_short: 台達電
+    sector: 電子零組件
+    venue: TWSE
+    listing_date: '1988-12-19'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 台達電
+      match_mode: name
+      priority: 3
+  '2313':
+    name_short: 華通
+    sector: 電子零組件
+    venue: TWSE
+    listing_date: '1990-07-24'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 華通
+      match_mode: name_with_context
+      priority: 2
+  '2316':
+    name_short: 楠梓電
+    sector: 電子零組件
+    venue: TWSE
+    listing_date: '1991-02-05'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 楠梓電
+      match_mode: name
+      priority: 3
+  '2327':
+    name_short: 國巨*
+    sector: 電子零組件
+    venue: TWSE
+    listing_date: '1993-10-22'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 國巨
+      match_mode: name_with_context
+      priority: 2
+    - text: 國巨*
+      match_mode: name_with_context
+      priority: 3
+  '2328':
+    name_short: 廣宇
+    sector: 電子零組件
+    venue: TWSE
+    listing_date: '1993-11-09'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 廣宇
+      match_mode: name_with_context
+      priority: 2
+  '2355':
+    name_short: 敬鵬
+    sector: 電子零組件
+    venue: TWSE
+    listing_date: '1996-10-14'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 敬鵬
+      match_mode: name_with_context
+      priority: 2
+  '2367':
+    name_short: 燿華
+    sector: 電子零組件
+    venue: TWSE
+    listing_date: '1997-12-13'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 燿華
+      match_mode: name_with_context
+      priority: 2
+  '1503':
+    name_short: 士電
+    sector: 電機機械
+    venue: TWSE
+    listing_date: '1969-12-15'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 士電
+      match_mode: name_with_context
+      priority: 2
+  '1504':
+    name_short: 東元
+    sector: 電機機械
+    venue: TWSE
+    listing_date: '1973-11-05'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 東元
+      match_mode: name_with_context
+      priority: 2
+  '1506':
+    name_short: 正道
+    sector: 電機機械
+    venue: TWSE
+    listing_date: '1980-08-11'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 正道
+      match_mode: name_with_context
+      priority: 2
+  '1513':
+    name_short: 中興電
+    sector: 電機機械
+    venue: TWSE
+    listing_date: '1994-03-08'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 中興電
+      match_mode: name
+      priority: 3
+  '1514':
+    name_short: 亞力
+    sector: 電機機械
+    venue: TWSE
+    listing_date: '1994-03-26'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 亞力
+      match_mode: name_with_context
+      priority: 2
+  '1515':
+    name_short: 力山
+    sector: 電機機械
+    venue: TWSE
+    listing_date: '1995-02-04'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 力山
+      match_mode: name_with_context
+      priority: 2
+  '1517':
+    name_short: 利奇
+    sector: 電機機械
+    venue: TWSE
+    listing_date: '1995-11-14'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 利奇
+      match_mode: name_with_context
+      priority: 2
+  '1519':
+    name_short: 華城
+    sector: 電機機械
+    venue: TWSE
+    listing_date: '1997-04-16'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 華城
+      match_mode: name_with_context
+      priority: 2
+  '1526':
+    name_short: 日馳
+    sector: 電機機械
+    venue: TWSE
+    listing_date: '2000-03-27'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 日馳
+      match_mode: name_with_context
+      priority: 2
+  '1527':
+    name_short: 鑽全
+    sector: 電機機械
+    venue: TWSE
+    listing_date: '2000-06-21'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 鑽全
+      match_mode: name_with_context
+      priority: 2
+  '1603':
+    name_short: 華電
+    sector: 電器電纜
+    venue: TWSE
+    listing_date: '1968-06-03'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 華電
+      match_mode: name_with_context
+      priority: 2
+  '1604':
+    name_short: 聲寶
+    sector: 電器電纜
+    venue: TWSE
+    listing_date: '1970-12-14'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 聲寶
+      match_mode: name_with_context
+      priority: 2
+  '1605':
+    name_short: 華新
+    sector: 電器電纜
+    venue: TWSE
+    listing_date: '1972-11-03'
+    is_ky: false
+    collision_group: 華新系
+    variants:
+    - text: 華新麗華
+      match_mode: name_with_context
+      priority: 4
+  '1608':
+    name_short: 華榮
+    sector: 電器電纜
+    venue: TWSE
+    listing_date: '1988-07-11'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 華榮
+      match_mode: name_with_context
+      priority: 2
+  '1609':
+    name_short: 大亞
+    sector: 電器電纜
+    venue: TWSE
+    listing_date: '1988-12-12'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 大亞
+      match_mode: name_with_context
+      priority: 2
+  '1611':
+    name_short: 中電
+    sector: 電器電纜
+    venue: TWSE
+    listing_date: '1990-01-16'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 中電
+      match_mode: name_with_context
+      priority: 2
+  '1612':
+    name_short: 宏泰
+    sector: 電器電纜
+    venue: TWSE
+    listing_date: '1993-05-08'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 宏泰
+      match_mode: name_with_context
+      priority: 2
+  '1614':
+    name_short: 三洋電
+    sector: 電器電纜
+    venue: TWSE
+    listing_date: '1997-09-18'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 三洋電
+      match_mode: name
+      priority: 3
+  '1615':
+    name_short: 大山
+    sector: 電器電纜
+    venue: TWSE
+    listing_date: '2000-03-30'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 大山
+      match_mode: name_with_context
+      priority: 2
+  '1616':
+    name_short: 億泰
+    sector: 電器電纜
+    venue: TWSE
+    listing_date: '2000-09-11'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 億泰
+      match_mode: name_with_context
+      priority: 2
+  '1707':
+    name_short: 葡萄王
+    sector: 生技
+    venue: TWSE
+    listing_date: '1982-12-20'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 葡萄王
+      match_mode: name
+      priority: 3
+  '1720':
+    name_short: 生達
+    sector: 生技
+    venue: TWSE
+    listing_date: '1995-12-12'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 生達
+      match_mode: name_with_context
+      priority: 2
+  '1731':
+    name_short: 美吾華
+    sector: 生技
+    venue: TWSE
+    listing_date: '2001-09-17'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 美吾華
+      match_mode: name
+      priority: 3
+  '1733':
+    name_short: 五鼎
+    sector: 生技
+    venue: TWSE
+    listing_date: '2001-09-17'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 五鼎
+      match_mode: name_with_context
+      priority: 2
+  '1734':
+    name_short: 杏輝
+    sector: 生技
+    venue: TWSE
+    listing_date: '2002-08-26'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 杏輝
+      match_mode: name_with_context
+      priority: 2
+  '1752':
+    name_short: 南光
+    sector: 生技
+    venue: TWSE
+    listing_date: '2022-01-19'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 南光
+      match_mode: name_with_context
+      priority: 2
+  '1760':
+    name_short: 寶齡富錦
+    sector: 生技
+    venue: TWSE
+    listing_date: '2018-01-23'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 寶齡富錦
+      match_mode: name
+      priority: 4
+  '1762':
+    name_short: 中化生
+    sector: 生技
+    venue: TWSE
+    listing_date: '2010-12-20'
+    is_ky: false
+    collision_group: 中化系
+    variants:
+    - text: 中化生
+      match_mode: name_with_context
+      priority: 3
+  '1783':
+    name_short: 和康生
+    sector: 生技
+    venue: TWSE
+    listing_date: '2013-12-20'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 和康生
+      match_mode: name
+      priority: 3
+  '1786':
+    name_short: 科妍
+    sector: 生技
+    venue: TWSE
+    listing_date: '2013-11-12'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 科妍
+      match_mode: name_with_context
+      priority: 2
+  '1708':
+    name_short: 東鹼
+    sector: 化學
+    venue: TWSE
+    listing_date: '1986-06-16'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 東鹼
+      match_mode: name_with_context
+      priority: 2
+  '1709':
+    name_short: 和益
+    sector: 化學
+    venue: TWSE
+    listing_date: '1986-07-03'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 和益
+      match_mode: name_with_context
+      priority: 2
+  '1710':
+    name_short: 東聯
+    sector: 化學
+    venue: TWSE
+    listing_date: '1987-10-21'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 東聯
+      match_mode: name_with_context
+      priority: 2
+  '1711':
+    name_short: 永光
+    sector: 化學
+    venue: TWSE
+    listing_date: '1988-12-27'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 永光
+      match_mode: name_with_context
+      priority: 2
+  '1712':
+    name_short: 興農
+    sector: 化學
+    venue: TWSE
+    listing_date: '1989-12-14'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 興農
+      match_mode: name_with_context
+      priority: 2
+  '1713':
+    name_short: 國化
+    sector: 化學
+    venue: TWSE
+    listing_date: '1990-01-31'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 國化
+      match_mode: name_with_context
+      priority: 2
+  '1714':
+    name_short: 和桐
+    sector: 化學
+    venue: TWSE
+    listing_date: '1991-08-30'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 和桐
+      match_mode: name_with_context
+      priority: 2
+  '1717':
+    name_short: 長興
+    sector: 化學
+    venue: TWSE
+    listing_date: '1994-03-31'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 長興
+      match_mode: name_with_context
+      priority: 2
+  '1718':
+    name_short: 中纖
+    sector: 化學
+    venue: TWSE
+    listing_date: '1963-12-02'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 中纖
+      match_mode: name_with_context
+      priority: 2
+  '1721':
+    name_short: 三晃
+    sector: 化學
+    venue: TWSE
+    listing_date: '1996-05-16'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 三晃
+      match_mode: name_with_context
+      priority: 2
+  '1802':
+    name_short: 台玻
+    sector: 玻璃
+    venue: TWSE
+    listing_date: '1973-07-20'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 台玻
+      match_mode: name_with_context
+      priority: 2
+  '1806':
+    name_short: 冠軍
+    sector: 玻璃
+    venue: TWSE
+    listing_date: '1992-09-29'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 冠軍
+      match_mode: name_with_context
+      priority: 2
+  '1809':
+    name_short: 中釉
+    sector: 玻璃
+    venue: TWSE
+    listing_date: '1996-04-30'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 中釉
+      match_mode: name_with_context
+      priority: 2
+  '1810':
+    name_short: 和成
+    sector: 玻璃
+    venue: TWSE
+    listing_date: '1991-10-14'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 和成
+      match_mode: name_with_context
+      priority: 2
+  '1817':
+    name_short: 凱撒衛
+    sector: 玻璃
+    venue: TWSE
+    listing_date: '2013-10-24'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 凱撒衛
+      match_mode: name
+      priority: 3
+  '1903':
+    name_short: 士紙
+    sector: 造紙
+    venue: TWSE
+    listing_date: '1963-12-09'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 士紙
+      match_mode: name_with_context
+      priority: 2
+  '1904':
+    name_short: 正隆
+    sector: 造紙
+    venue: TWSE
+    listing_date: '1971-09-10'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 正隆
+      match_mode: name_with_context
+      priority: 2
+  '1905':
+    name_short: 華紙
+    sector: 造紙
+    venue: TWSE
+    listing_date: '1975-02-07'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 華紙
+      match_mode: name_with_context
+      priority: 2
+  '1906':
+    name_short: 寶隆
+    sector: 造紙
+    venue: TWSE
+    listing_date: '1976-04-26'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 寶隆
+      match_mode: name_with_context
+      priority: 2
+  '1907':
+    name_short: 永豐餘
+    sector: 造紙
+    venue: TWSE
+    listing_date: '1977-02-22'
+    is_ky: false
+    collision_group: 永豐系
+    variants:
+    - text: 永豐餘
+      match_mode: name
+      priority: 3
+  '1909':
+    name_short: 榮成
+    sector: 造紙
+    venue: TWSE
+    listing_date: '1985-11-19'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 榮成
+      match_mode: name_with_context
+      priority: 2
+  '6790':
+    name_short: 永豐實
+    sector: 造紙
+    venue: TWSE
+    listing_date: '2021-09-29'
+    is_ky: false
+    collision_group: 永豐系
+    variants:
+    - text: 永豐實
+      match_mode: name_with_context
+      priority: 3
+  '2002':
+    name_short: 中鋼
+    sector: 鋼鐵
+    venue: TWSE
+    listing_date: '1974-12-26'
+    is_ky: false
+    collision_group: 中鋼系
+    variants:
+    - text: 中鋼
+      match_mode: name_with_context
+      priority: 2
+  '2006':
+    name_short: 東和鋼鐵
+    sector: 鋼鐵
+    venue: TWSE
+    listing_date: '1988-07-13'
+    is_ky: false
+    collision_group: 東和系
+    variants:
+    - text: 東和鋼鐵
+      match_mode: name
+      priority: 4
+  '2007':
+    name_short: 燁興
+    sector: 鋼鐵
+    venue: TWSE
+    listing_date: '1988-10-04'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 燁興
+      match_mode: name_with_context
+      priority: 2
+  '2008':
+    name_short: 高興昌
+    sector: 鋼鐵
+    venue: TWSE
+    listing_date: '1988-12-28'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 高興昌
+      match_mode: name
+      priority: 3
+  '2009':
+    name_short: 第一銅
+    sector: 鋼鐵
+    venue: TWSE
+    listing_date: '1989-10-20'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 第一銅
+      match_mode: name
+      priority: 3
+  '2010':
+    name_short: 春源
+    sector: 鋼鐵
+    venue: TWSE
+    listing_date: '1989-12-22'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 春源
+      match_mode: name_with_context
+      priority: 2
+  '2012':
+    name_short: 春雨
+    sector: 鋼鐵
+    venue: TWSE
+    listing_date: '1991-10-17'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 春雨
+      match_mode: name_with_context
+      priority: 2
+  '2013':
+    name_short: 中鋼構
+    sector: 鋼鐵
+    venue: TWSE
+    listing_date: '1992-01-21'
+    is_ky: false
+    collision_group: 中鋼系
+    variants:
+    - text: 中鋼構
+      match_mode: name
+      priority: 3
+  '2014':
+    name_short: 中鴻
+    sector: 鋼鐵
+    venue: TWSE
+    listing_date: '1992-02-20'
+    is_ky: false
+    collision_group: 中鋼系
+    variants:
+    - text: 中鴻
+      match_mode: name_with_context
+      priority: 2
+  '2015':
+    name_short: 豐興
+    sector: 鋼鐵
+    venue: TWSE
+    listing_date: '1992-05-25'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 豐興
+      match_mode: name_with_context
+      priority: 2
+  '2062':
+    name_short: 橋椿
+    sector: 居家生活
+    venue: TWSE
+    listing_date: '2007-11-16'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 橋椿
+      match_mode: name_with_context
+      priority: 2
+  '3557':
+    name_short: 嘉威
+    sector: 居家生活
+    venue: TWSE
+    listing_date: '2008-02-27'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 嘉威
+      match_mode: name_with_context
+      priority: 2
+  '6671':
+    name_short: 三能-KY
+    sector: 居家生活
+    venue: TWSE
+    listing_date: '2018-12-11'
+    is_ky: true
+    collision_group: null
+    variants:
+    - text: 三能
+      match_mode: name_with_context
+      priority: 2
+    - text: 三能-KY
+      match_mode: name_with_context
+      priority: 5
+  '6754':
+    name_short: 匯僑設計
+    sector: 居家生活
+    venue: TWSE
+    listing_date: '2020-08-25'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 匯僑設計
+      match_mode: name
+      priority: 4
+  '6807':
+    name_short: 峰源-KY
+    sector: 居家生活
+    venue: TWSE
+    listing_date: '2022-04-25'
+    is_ky: true
+    collision_group: null
+    variants:
+    - text: 峰源
+      match_mode: name_with_context
+      priority: 2
+    - text: 峰源-KY
+      match_mode: name_with_context
+      priority: 5
+  '8464':
+    name_short: 億豐
+    sector: 居家生活
+    venue: TWSE
+    listing_date: '2015-12-22'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 億豐
+      match_mode: name_with_context
+      priority: 2
+  '8482':
+    name_short: 商億-KY
+    sector: 居家生活
+    venue: TWSE
+    listing_date: '2018-08-15'
+    is_ky: true
+    collision_group: null
+    variants:
+    - text: 商億
+      match_mode: name_with_context
+      priority: 2
+    - text: 商億-KY
+      match_mode: name_with_context
+      priority: 5
+  '9911':
+    name_short: 櫻花
+    sector: 居家生活
+    venue: TWSE
+    listing_date: '1992-07-16'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 櫻花
+      match_mode: name_with_context
+      priority: 2
+  '9924':
+    name_short: 福興
+    sector: 居家生活
+    venue: TWSE
+    listing_date: '1995-03-15'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 福興
+      match_mode: name_with_context
+      priority: 2
+  '9934':
+    name_short: 成霖
+    sector: 居家生活
+    venue: TWSE
+    listing_date: '2000-09-11'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 成霖
+      match_mode: name_with_context
+      priority: 2
+  '2072':
+    name_short: 世紀風電
+    sector: 綠能環保
+    venue: TWSE
+    listing_date: '2026-03-26'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 世紀風電
+      match_mode: name
+      priority: 4
+  '3708':
+    name_short: 上緯投控
+    sector: 綠能環保
+    venue: TWSE
+    listing_date: '2016-08-31'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 上緯投控
+      match_mode: name
+      priority: 4
+  '5292':
+    name_short: 華懋
+    sector: 綠能環保
+    venue: TWSE
+    listing_date: '2023-11-21'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 華懋
+      match_mode: name_with_context
+      priority: 2
+  '6581':
+    name_short: 鋼聯
+    sector: 綠能環保
+    venue: TWSE
+    listing_date: '2018-01-30'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 鋼聯
+      match_mode: name_with_context
+      priority: 2
+  '6641':
+    name_short: 基士德-KY
+    sector: 綠能環保
+    venue: TWSE
+    listing_date: '2018-09-21'
+    is_ky: true
+    collision_group: null
+    variants:
+    - text: 基士德
+      match_mode: name
+      priority: 3
+    - text: 基士德-KY
+      match_mode: name
+      priority: 6
+  '6869':
+    name_short: 雲豹能源
+    sector: 綠能環保
+    venue: TWSE
+    listing_date: '2023-03-14'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 雲豹能源
+      match_mode: name
+      priority: 4
+  '6873':
+    name_short: 泓德能源
+    sector: 綠能環保
+    venue: TWSE
+    listing_date: '2024-09-26'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 泓德能源
+      match_mode: name
+      priority: 4
+  '6887':
+    name_short: 寶綠特-KY
+    sector: 綠能環保
+    venue: TWSE
+    listing_date: '2025-03-10'
+    is_ky: true
+    collision_group: null
+    variants:
+    - text: 寶綠特
+      match_mode: name
+      priority: 3
+    - text: 寶綠特-KY
+      match_mode: name
+      priority: 6
+  '6923':
+    name_short: 中台
+    sector: 綠能環保
+    venue: TWSE
+    listing_date: '2024-09-25'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 中台
+      match_mode: name_with_context
+      priority: 2
+  '6944':
+    name_short: 兆聯實業
+    sector: 綠能環保
+    venue: TWSE
+    listing_date: '2025-05-28'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 兆聯實業
+      match_mode: name
+      priority: 4
+  '2101':
+    name_short: 南港
+    sector: 橡膠
+    venue: TWSE
+    listing_date: '1963-11-01'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 南港
+      match_mode: name_with_context
+      priority: 2
+  '2102':
+    name_short: 泰豐
+    sector: 橡膠
+    venue: TWSE
+    listing_date: '1979-07-16'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 泰豐
+      match_mode: name_with_context
+      priority: 2
+  '2103':
+    name_short: 台橡
+    sector: 橡膠
+    venue: TWSE
+    listing_date: '1982-09-25'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 台橡
+      match_mode: name_with_context
+      priority: 2
+  '2104':
+    name_short: 國際中橡
+    sector: 橡膠
+    venue: TWSE
+    listing_date: '1986-07-15'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 國際中橡
+      match_mode: name
+      priority: 4
+  '2105':
+    name_short: 正新
+    sector: 橡膠
+    venue: TWSE
+    listing_date: '1987-12-07'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 正新
+      match_mode: name_with_context
+      priority: 2
+  '2106':
+    name_short: 建大
+    sector: 橡膠
+    venue: TWSE
+    listing_date: '1990-12-20'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 建大
+      match_mode: name_with_context
+      priority: 2
+  '2107':
+    name_short: 厚生
+    sector: 橡膠
+    venue: TWSE
+    listing_date: '1992-03-03'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 厚生
+      match_mode: name_with_context
+      priority: 2
+  '2108':
+    name_short: 南帝
+    sector: 橡膠
+    venue: TWSE
+    listing_date: '1992-10-27'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 南帝
+      match_mode: name_with_context
+      priority: 2
+  '2109':
+    name_short: 華豐
+    sector: 橡膠
+    venue: TWSE
+    listing_date: '2000-05-08'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 華豐
+      match_mode: name_with_context
+      priority: 2
+  '2114':
+    name_short: 鑫永銓
+    sector: 橡膠
+    venue: TWSE
+    listing_date: '2010-12-29'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 鑫永銓
+      match_mode: name
+      priority: 3
+  '2208':
+    name_short: 台船
+    sector: 航運
+    venue: TWSE
+    listing_date: '2008-12-22'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 台船
+      match_mode: name_with_context
+      priority: 2
+  '2601':
+    name_short: 益航
+    sector: 航運
+    venue: TWSE
+    listing_date: '1965-11-04'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 益航
+      match_mode: name_with_context
+      priority: 2
+  '2603':
+    name_short: 長榮
+    sector: 航運
+    venue: TWSE
+    listing_date: '1987-09-21'
+    is_ky: false
+    collision_group: 長榮系
+    variants:
+    - text: 長榮海運
+      match_mode: name_with_context
+      priority: 4
+  '2605':
+    name_short: 新興
+    sector: 航運
+    venue: TWSE
+    listing_date: '1989-12-08'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 新興
+      match_mode: name_with_context
+      priority: 2
+  '2606':
+    name_short: 裕民
+    sector: 航運
+    venue: TWSE
+    listing_date: '1990-12-08'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 裕民
+      match_mode: name_with_context
+      priority: 2
+  '2607':
+    name_short: 榮運
+    sector: 航運
+    venue: TWSE
+    listing_date: '1990-12-14'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 榮運
+      match_mode: name_with_context
+      priority: 2
+  '2608':
+    name_short: 嘉里大榮
+    sector: 航運
+    venue: TWSE
+    listing_date: '1990-12-20'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 嘉里大榮
+      match_mode: name
+      priority: 4
+  '2609':
+    name_short: 陽明
+    sector: 航運
+    venue: TWSE
+    listing_date: '1992-04-20'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 陽明
+      match_mode: name_with_context
+      priority: 2
+    - text: 陽明海運
+      match_mode: name_with_context
+      priority: 4
+  '2610':
+    name_short: 華航
+    sector: 航運
+    venue: TWSE
+    listing_date: '1993-02-26'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 華航
+      match_mode: name_with_context
+      priority: 2
+  '2611':
+    name_short: 志信
+    sector: 航運
+    venue: TWSE
+    listing_date: '1993-10-28'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 志信
+      match_mode: name_with_context
+      priority: 2
+  '2302':
+    name_short: 麗正
+    sector: 半導體
+    venue: TWSE
+    listing_date: '1985-01-15'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 麗正
+      match_mode: name_with_context
+      priority: 2
+  '2303':
+    name_short: 聯電
+    sector: 半導體
+    venue: TWSE
+    listing_date: '1985-07-16'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 聯電
+      match_mode: name_with_context
+      priority: 2
+  '2329':
+    name_short: 華泰
+    sector: 半導體
+    venue: TWSE
+    listing_date: '1994-04-20'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 華泰
+      match_mode: name_with_context
+      priority: 2
+  '2330':
+    name_short: 台積電
+    sector: 半導體
+    venue: TWSE
+    listing_date: '1994-09-05'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 台積電
+      match_mode: name
+      priority: 3
+    - text: 台積
+      match_mode: name
+      priority: 2
+  '2337':
+    name_short: 旺宏
+    sector: 半導體
+    venue: TWSE
+    listing_date: '1995-03-15'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 旺宏
+      match_mode: name_with_context
+      priority: 2
+  '2338':
+    name_short: 光罩
+    sector: 半導體
+    venue: TWSE
+    listing_date: '1995-04-17'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 光罩
+      match_mode: name_with_context
+      priority: 2
+  '2340':
+    name_short: 台亞
+    sector: 半導體
+    venue: TWSE
+    listing_date: '1995-05-02'
+    is_ky: false
+    collision_group: 台亞台聚
+    variants:
+    - text: 台亞
+      match_mode: name_with_context
+      priority: 2
+  '2342':
+    name_short: 茂矽
+    sector: 半導體
+    venue: TWSE
+    listing_date: '1995-09-19'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 茂矽
+      match_mode: name_with_context
+      priority: 2
+  '2344':
+    name_short: 華邦電
+    sector: 半導體
+    venue: TWSE
+    listing_date: '1995-10-18'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 華邦電
+      match_mode: name
+      priority: 3
+  '2351':
+    name_short: 順德
+    sector: 半導體
+    venue: TWSE
+    listing_date: '1996-04-25'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 順德
+      match_mode: name_with_context
+      priority: 2
+  '2312':
+    name_short: 金寶
+    sector: 其他電子
+    venue: TWSE
+    listing_date: '1989-11-07'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 金寶
+      match_mode: name_with_context
+      priority: 2
+  '2317':
+    name_short: 鴻海
+    sector: 其他電子
+    venue: TWSE
+    listing_date: '1991-06-18'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 鴻海
+      match_mode: name_with_context
+      priority: 2
+  '2354':
+    name_short: 鴻準
+    sector: 其他電子
+    venue: TWSE
+    listing_date: '1996-10-08'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 鴻準
+      match_mode: name_with_context
+      priority: 2
+  '2359':
+    name_short: 所羅門
+    sector: 其他電子
+    venue: TWSE
+    listing_date: '1996-12-19'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 所羅門
+      match_mode: name
+      priority: 3
+  '2360':
+    name_short: 致茂
+    sector: 其他電子
+    venue: TWSE
+    listing_date: '1996-12-21'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 致茂
+      match_mode: name_with_context
+      priority: 2
+  '2373':
+    name_short: 震旦行
+    sector: 其他電子
+    venue: TWSE
+    listing_date: '1991-08-01'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 震旦行
+      match_mode: name
+      priority: 3
+  '2390':
+    name_short: 云辰
+    sector: 其他電子
+    venue: TWSE
+    listing_date: '1999-06-15'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 云辰
+      match_mode: name_with_context
+      priority: 2
+  '2404':
+    name_short: 漢唐
+    sector: 其他電子
+    venue: TWSE
+    listing_date: '2000-03-14'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 漢唐
+      match_mode: name_with_context
+      priority: 2
+  '2423':
+    name_short: 固緯
+    sector: 其他電子
+    venue: TWSE
+    listing_date: '2000-09-11'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 固緯
+      match_mode: name_with_context
+      priority: 2
+  '2433':
+    name_short: 互盛電
+    sector: 其他電子
+    venue: TWSE
+    listing_date: '2000-09-11'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 互盛電
+      match_mode: name
+      priority: 3
+  '2323':
+    name_short: 中環
+    sector: 光電
+    venue: TWSE
+    listing_date: '1992-02-17'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 中環
+      match_mode: name_with_context
+      priority: 2
+  '2349':
+    name_short: 錸德
+    sector: 光電
+    venue: TWSE
+    listing_date: '1996-04-23'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 錸德
+      match_mode: name_with_context
+      priority: 2
+  '2374':
+    name_short: 佳能
+    sector: 光電
+    venue: TWSE
+    listing_date: '1995-01-16'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 佳能
+      match_mode: name_with_context
+      priority: 2
+  '2393':
+    name_short: 億光
+    sector: 光電
+    venue: TWSE
+    listing_date: '1999-11-04'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 億光
+      match_mode: name_with_context
+      priority: 2
+  '2406':
+    name_short: 國碩
+    sector: 光電
+    venue: TWSE
+    listing_date: '2000-04-29'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 國碩
+      match_mode: name_with_context
+      priority: 2
+  '2409':
+    name_short: 友達
+    sector: 光電
+    venue: TWSE
+    listing_date: '2000-09-08'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 友達
+      match_mode: name_with_context
+      priority: 2
+  '2426':
+    name_short: 鼎元
+    sector: 光電
+    venue: TWSE
+    listing_date: '2000-09-11'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 鼎元
+      match_mode: name_with_context
+      priority: 2
+  '2429':
+    name_short: 銘旺科
+    sector: 光電
+    venue: TWSE
+    listing_date: '2000-09-11'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 銘旺科
+      match_mode: name
+      priority: 3
+  '2438':
+    name_short: 翔耀
+    sector: 光電
+    venue: TWSE
+    listing_date: '2000-09-11'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 翔耀
+      match_mode: name_with_context
+      priority: 2
+  '2466':
+    name_short: 冠西電
+    sector: 光電
+    venue: TWSE
+    listing_date: '2001-09-17'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 冠西電
+      match_mode: name
+      priority: 3
+  '2347':
+    name_short: 聯強
+    sector: 電子通路
+    venue: TWSE
+    listing_date: '1995-12-13'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 聯強
+      match_mode: name_with_context
+      priority: 2
+  '2414':
+    name_short: 精技
+    sector: 電子通路
+    venue: TWSE
+    listing_date: '2000-09-11'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 精技
+      match_mode: name_with_context
+      priority: 2
+  '2430':
+    name_short: 燦坤
+    sector: 電子通路
+    venue: TWSE
+    listing_date: '2000-09-11'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 燦坤
+      match_mode: name_with_context
+      priority: 2
+  '3010':
+    name_short: 華立
+    sector: 電子通路
+    venue: TWSE
+    listing_date: '2002-07-22'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 華立
+      match_mode: name_with_context
+      priority: 2
+  '3028':
+    name_short: 增你強
+    sector: 電子通路
+    venue: TWSE
+    listing_date: '2002-08-26'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 增你強
+      match_mode: name
+      priority: 3
+  '3033':
+    name_short: 威健
+    sector: 電子通路
+    venue: TWSE
+    listing_date: '2002-08-26'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 威健
+      match_mode: name_with_context
+      priority: 2
+  '3036':
+    name_short: 文曄
+    sector: 電子通路
+    venue: TWSE
+    listing_date: '2002-08-26'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 文曄
+      match_mode: name_with_context
+      priority: 2
+  '3048':
+    name_short: 益登
+    sector: 電子通路
+    venue: TWSE
+    listing_date: '2002-10-01'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 益登
+      match_mode: name_with_context
+      priority: 2
+  '3054':
+    name_short: 立萬利
+    sector: 電子通路
+    venue: TWSE
+    listing_date: '2002-11-18'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 立萬利
+      match_mode: name
+      priority: 3
+  '3055':
+    name_short: 蔚華科
+    sector: 電子通路
+    venue: TWSE
+    listing_date: '2002-12-12'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 蔚華科
+      match_mode: name
+      priority: 3
+  '2427':
+    name_short: 三商電
+    sector: 資訊服務
+    venue: TWSE
+    listing_date: '2000-09-11'
+    is_ky: false
+    collision_group: 三商系
+    variants:
+    - text: 三商電
+      match_mode: name
+      priority: 3
+  '2453':
+    name_short: 凌群
+    sector: 資訊服務
+    venue: TWSE
+    listing_date: '2001-05-22'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 凌群
+      match_mode: name_with_context
+      priority: 2
+  '2468':
+    name_short: 華經
+    sector: 資訊服務
+    venue: TWSE
+    listing_date: '2001-09-17'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 華經
+      match_mode: name_with_context
+      priority: 2
+  '2471':
+    name_short: 資通
+    sector: 資訊服務
+    venue: TWSE
+    listing_date: '2001-09-17'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 資通
+      match_mode: name_with_context
+      priority: 2
+  '2480':
+    name_short: 敦陽科
+    sector: 資訊服務
+    venue: TWSE
+    listing_date: '2001-09-17'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 敦陽科
+      match_mode: name
+      priority: 3
+  '3029':
+    name_short: 零壹
+    sector: 資訊服務
+    venue: TWSE
+    listing_date: '2002-08-26'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 零壹
+      match_mode: name_with_context
+      priority: 2
+  '4994':
+    name_short: 傳奇
+    sector: 資訊服務
+    venue: TWSE
+    listing_date: '2013-12-25'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 傳奇
+      match_mode: name_with_context
+      priority: 2
+  '5203':
+    name_short: 訊連
+    sector: 資訊服務
+    venue: TWSE
+    listing_date: '2004-09-27'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 訊連
+      match_mode: name_with_context
+      priority: 2
+  '6112':
+    name_short: 邁達特
+    sector: 資訊服務
+    venue: TWSE
+    listing_date: '2003-08-04'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 邁達特
+      match_mode: name
+      priority: 3
+  '6183':
+    name_short: 關貿
+    sector: 資訊服務
+    venue: TWSE
+    listing_date: '2011-12-01'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 關貿
+      match_mode: name_with_context
+      priority: 2
+  '2616':
+    name_short: 山隆
+    sector: 油電燃氣
+    venue: TWSE
+    listing_date: '1997-11-08'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 山隆
+      match_mode: name_with_context
+      priority: 2
+  '6505':
+    name_short: 台塑化
+    sector: 油電燃氣
+    venue: TWSE
+    listing_date: '2003-12-26'
+    is_ky: false
+    collision_group: 台塑系
+    variants:
+    - text: 台塑化
+      match_mode: name
+      priority: 3
+  '8926':
+    name_short: 台汽電
+    sector: 油電燃氣
+    venue: TWSE
+    listing_date: '2003-08-25'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 台汽電
+      match_mode: name
+      priority: 3
+  '9908':
+    name_short: 大台北
+    sector: 油電燃氣
+    venue: TWSE
+    listing_date: '1991-02-06'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 大台北
+      match_mode: name
+      priority: 3
+  '9918':
+    name_short: 欣天然
+    sector: 油電燃氣
+    venue: TWSE
+    listing_date: '1994-04-26'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 欣天然
+      match_mode: name
+      priority: 3
+  '9926':
+    name_short: 新海
+    sector: 油電燃氣
+    venue: TWSE
+    listing_date: '1998-04-08'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 新海
+      match_mode: name_with_context
+      priority: 2
+  '9931':
+    name_short: 欣高
+    sector: 油電燃氣
+    venue: TWSE
+    listing_date: '2000-03-21'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 欣高
+      match_mode: name_with_context
+      priority: 2
+  '9937':
+    name_short: 全國
+    sector: 油電燃氣
+    venue: TWSE
+    listing_date: '2000-09-11'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 全國
+      match_mode: name_with_context
+      priority: 2
+  '2701':
+    name_short: 萬企
+    sector: 觀光餐旅
+    venue: TWSE
+    listing_date: '1965-03-22'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 萬企
+      match_mode: name_with_context
+      priority: 2
+  '2702':
+    name_short: 華園
+    sector: 觀光餐旅
+    venue: TWSE
+    listing_date: '1965-02-14'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 華園
+      match_mode: name_with_context
+      priority: 2
+  '2704':
+    name_short: 國賓
+    sector: 觀光餐旅
+    venue: TWSE
+    listing_date: '1982-11-10'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 國賓
+      match_mode: name_with_context
+      priority: 2
+  '2705':
+    name_short: 六福
+    sector: 觀光餐旅
+    venue: TWSE
+    listing_date: '1988-12-24'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 六福
+      match_mode: name_with_context
+      priority: 2
+  '2706':
+    name_short: 第一店
+    sector: 觀光餐旅
+    venue: TWSE
+    listing_date: '1991-06-25'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 第一店
+      match_mode: name
+      priority: 3
+  '2707':
+    name_short: 晶華
+    sector: 觀光餐旅
+    venue: TWSE
+    listing_date: '1998-03-09'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 晶華
+      match_mode: name_with_context
+      priority: 2
+  '2712':
+    name_short: 遠雄來
+    sector: 觀光餐旅
+    venue: TWSE
+    listing_date: '2013-12-03'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 遠雄來
+      match_mode: name
+      priority: 3
+  '2722':
+    name_short: 夏都
+    sector: 觀光餐旅
+    venue: TWSE
+    listing_date: '2012-03-14'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 夏都
+      match_mode: name_with_context
+      priority: 2
+  '2723':
+    name_short: 美食-KY
+    sector: 觀光餐旅
+    venue: TWSE
+    listing_date: '2010-11-22'
+    is_ky: true
+    collision_group: null
+    variants:
+    - text: 美食
+      match_mode: name_with_context
+      priority: 2
+    - text: 美食-KY
+      match_mode: name_with_context
+      priority: 5
+  '2727':
+    name_short: 王品
+    sector: 觀光餐旅
+    venue: TWSE
+    listing_date: '2012-03-06'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 王品
+      match_mode: name_with_context
+      priority: 2
+  '2801':
+    name_short: 彰銀
+    sector: 金融
+    venue: TWSE
+    listing_date: '1962-02-15'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 彰銀
+      match_mode: name_with_context
+      priority: 2
+  '2812':
+    name_short: 台中銀
+    sector: 金融
+    venue: TWSE
+    listing_date: '1984-05-15'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 台中銀
+      match_mode: name
+      priority: 3
+  '2816':
+    name_short: 旺旺保
+    sector: 金融
+    venue: TWSE
+    listing_date: '1992-05-05'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 旺旺保
+      match_mode: name
+      priority: 3
+  '2820':
+    name_short: 華票
+    sector: 金融
+    venue: TWSE
+    listing_date: '1994-10-26'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 華票
+      match_mode: name_with_context
+      priority: 2
+  '2832':
+    name_short: 台產
+    sector: 金融
+    venue: TWSE
+    listing_date: '1997-09-30'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 台產
+      match_mode: name_with_context
+      priority: 2
+  '2834':
+    name_short: 臺企銀
+    sector: 金融
+    venue: TWSE
+    listing_date: '1998-01-03'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 臺企銀
+      match_mode: name
+      priority: 3
+  '2836':
+    name_short: 高雄銀
+    sector: 金融
+    venue: TWSE
+    listing_date: '1998-05-18'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 高雄銀
+      match_mode: name
+      priority: 3
+  '2838':
+    name_short: 聯邦銀
+    sector: 金融
+    venue: TWSE
+    listing_date: '1998-06-29'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 聯邦銀
+      match_mode: name
+      priority: 3
+  '2845':
+    name_short: 遠東銀
+    sector: 金融
+    venue: TWSE
+    listing_date: '1998-11-27'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 遠東銀
+      match_mode: name
+      priority: 3
+  '2849':
+    name_short: 安泰銀
+    sector: 金融
+    venue: TWSE
+    listing_date: '1999-09-27'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 安泰銀
+      match_mode: name
+      priority: 3
+  '2901':
+    name_short: 欣欣
+    sector: 貿易百貨
+    venue: TWSE
+    listing_date: '1976-05-07'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 欣欣
+      match_mode: name_with_context
+      priority: 2
+  '2903':
+    name_short: 遠百
+    sector: 貿易百貨
+    venue: TWSE
+    listing_date: '1978-10-11'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 遠百
+      match_mode: name_with_context
+      priority: 2
+  '2905':
+    name_short: 三商
+    sector: 貿易百貨
+    venue: TWSE
+    listing_date: '1988-09-19'
+    is_ky: false
+    collision_group: 三商系
+    variants:
+    - text: 三商
+      match_mode: name_with_context
+      priority: 2
+  '2906':
+    name_short: 高林
+    sector: 貿易百貨
+    venue: TWSE
+    listing_date: '1989-12-26'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 高林
+      match_mode: name_with_context
+      priority: 2
+  '2908':
+    name_short: 特力
+    sector: 貿易百貨
+    venue: TWSE
+    listing_date: '1993-02-18'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 特力
+      match_mode: name_with_context
+      priority: 2
+  '2910':
+    name_short: 統領
+    sector: 貿易百貨
+    venue: TWSE
+    listing_date: '1996-12-30'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 統領
+      match_mode: name_with_context
+      priority: 2
+  '2911':
+    name_short: 麗嬰房
+    sector: 貿易百貨
+    venue: TWSE
+    listing_date: '1997-01-18'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 麗嬰房
+      match_mode: name
+      priority: 3
+  '2912':
+    name_short: 統一超
+    sector: 貿易百貨
+    venue: TWSE
+    listing_date: '1997-08-22'
+    is_ky: false
+    collision_group: 統一系
+    variants:
+    - text: 統一超
+      match_mode: name
+      priority: 3
+  '2913':
+    name_short: 農林
+    sector: 貿易百貨
+    venue: TWSE
+    listing_date: '1962-02-09'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 農林
+      match_mode: name_with_context
+      priority: 2
+  '2915':
+    name_short: 潤泰全
+    sector: 貿易百貨
+    venue: TWSE
+    listing_date: '1977-07-20'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 潤泰全
+      match_mode: name
+      priority: 3
+  '3130':
+    name_short: 一零四
+    sector: 數位雲端
+    venue: TWSE
+    listing_date: '2006-02-17'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 一零四
+      match_mode: name
+      priority: 3
+  '6165':
+    name_short: 浪凡
+    sector: 數位雲端
+    venue: TWSE
+    listing_date: '2003-08-04'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 浪凡
+      match_mode: name_with_context
+      priority: 2
+  '6614':
+    name_short: 資拓宏宇
+    sector: 數位雲端
+    venue: TWSE
+    listing_date: '2025-11-25'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 資拓宏宇
+      match_mode: name
+      priority: 4
+  '6689':
+    name_short: 伊雲谷
+    sector: 數位雲端
+    venue: TWSE
+    listing_date: '2022-09-13'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 伊雲谷
+      match_mode: name
+      priority: 3
+  '6902':
+    name_short: GOGOLOOK
+    sector: 數位雲端
+    venue: TWSE
+    listing_date: '2023-07-13'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: GOGOLOOK
+      match_mode: name
+      priority: 8
+  '6906':
+    name_short: 現觀科
+    sector: 數位雲端
+    venue: TWSE
+    listing_date: '2024-01-15'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 現觀科
+      match_mode: name
+      priority: 3
+  '7721':
+    name_short: 微程式
+    sector: 數位雲端
+    venue: TWSE
+    listing_date: '2025-07-29'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 微程式
+      match_mode: name
+      priority: 3
+  '7722':
+    name_short: LINEPAY
+    sector: 數位雲端
+    venue: TWSE
+    listing_date: '2024-12-05'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: LINEPAY
+      match_mode: name
+      priority: 7
+  '7765':
+    name_short: 中華資安
+    sector: 數位雲端
+    venue: TWSE
+    listing_date: '2025-09-08'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 中華資安
+      match_mode: name
+      priority: 4
+  '8454':
+    name_short: 富邦媒
+    sector: 數位雲端
+    venue: TWSE
+    listing_date: '2014-12-19'
+    is_ky: false
+    collision_group: null
+    variants:
+    - text: 富邦媒
+      match_mode: name
+      priority: 3

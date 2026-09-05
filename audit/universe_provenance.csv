@@ -1,0 +1,6 @@
+field,value
+source,既有爬蟲產物 data/universe_267.csv
+selection_rule,每個 TWSE 產業別依證券代號升冪取前 10 檔；不足 10 檔者取全部
+n_tickers,267
+n_sectors,28
+note,本清單不是指數、不是市值前 267 大、不具市場代表性（PRD §1.4、§11）
