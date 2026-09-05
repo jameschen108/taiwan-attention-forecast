@@ -101,6 +101,9 @@ class Matcher:
     code_only: set[str] = field(default_factory=set)
     valid_codes: set[str] = field(default_factory=set)
     _ordered: list[Variant] = field(init=False, default_factory=list)
+    _alt: re.Pattern | None = field(init=False, default=None)
+    _by_text: dict[str, Variant] = field(init=False, default_factory=dict)
+    _names_by_ticker: dict[str, tuple[str, ...]] = field(init=False, default_factory=dict)
 
     def __post_init__(self) -> None:
         # 最長匹配優先：字元長度降冪，同長度時 priority 高者先
@@ -108,6 +111,17 @@ class Matcher:
         self._ordered = sorted(usable, key=lambda v: (-len(v.text), -v.priority, v.text))
         if not self.valid_codes:
             self.valid_codes = {v.ticker for v in self.variants}
+        # 單一交替式正則：依長度降冪排列，讓引擎在每個位置先試最長的寫法。
+        # 251,858 篇 × 267 檔逐一 str.find 太慢，改為一次掃描。
+        self._by_text = {}
+        for v in self._ordered:
+            self._by_text.setdefault(v.text, v)
+        if self._by_text:
+            self._alt = re.compile("|".join(re.escape(t) for t in self._by_text))
+        names: dict[str, list[str]] = {}
+        for v in self.variants:
+            names.setdefault(v.ticker, []).append(v.text)
+        self._names_by_ticker = {k: tuple(v) for k, v in names.items()}
 
     # -- 代號 ------------------------------------------------------------
     def match_codes(self, text: str) -> list[Match]:
@@ -127,30 +141,32 @@ class Matcher:
         return out
 
     def _name_present(self, text: str, ticker: str) -> bool:
-        return any(v.text in text for v in self.variants if v.ticker == ticker)
+        return any(t in text for t in self._names_by_ticker.get(ticker, ()))
 
     # -- 簡稱 ------------------------------------------------------------
     def match_names(self, text: str) -> list[Match]:
-        """最長匹配優先並消耗片段，避免短名吃掉長名的一部分。"""
-        consumed = [False] * len(text)
+        """最長匹配優先並消耗片段，避免短名吃掉長名的一部分。
+
+        交替式已依長度降冪排列，正則引擎在每個起點會先試最長的寫法；命中後從該
+        片段之後繼續，等同於「消耗」。上下文不足而被拒的短名只前進一個字元重掃，
+        使更短的合法寫法仍有機會命中。
+        """
+        if self._alt is None:
+            return []
         out: list[Match] = []
-        for var in self._ordered:
-            start = 0
-            while True:
-                idx = text.find(var.text, start)
-                if idx < 0:
-                    break
-                end = idx + len(var.text)
-                if any(consumed[idx:end]):
-                    start = idx + 1
-                    continue
-                if var.match_mode == "name_with_context" and not self._has_context(text, idx, end):
-                    start = idx + 1
-                    continue
-                for i in range(idx, end):
-                    consumed[i] = True
-                out.append(Match(var.ticker, var.match_mode, var.text, idx, end))
-                start = end
+        pos, n = 0, len(text)
+        while pos < n:
+            m = self._alt.search(text, pos)
+            if m is None:
+                break
+            var = self._by_text[m.group(0)]
+            if var.match_mode == "name_with_context" and not self._has_context(
+                text, m.start(), m.end()
+            ):
+                pos = m.start() + 1
+                continue
+            out.append(Match(var.ticker, var.match_mode, var.text, m.start(), m.end()))
+            pos = m.end()
         return out
 
     def _has_context(self, text: str, start: int, end: int) -> bool:
