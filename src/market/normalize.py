@@ -141,9 +141,17 @@ def apply_adjustment(prices: pd.DataFrame, factors: pd.DataFrame) -> pd.DataFram
     return pd.concat(out, ignore_index=True)
 
 
-def build_daily_panel(raw_root: Path, out_dir: Path, audit_dir: Path) -> pd.DataFrame:
+def build_daily_panel(raw_root: Path, out_dir: Path, audit_dir: Path,
+                      t86_dir: Path | None = None) -> pd.DataFrame:
     prices = load_prices(raw_root)
-    inst = load_institutional(raw_root)
+    if t86_dir is not None and t86_dir.exists():
+        # 既有 T86 封存涵蓋 2015-01 ~ 2024-12，正好覆蓋主樣本，且不受 API 額度限制。
+        # 單位已由 tests/test_market_sources.py 對 FinMind 逐日驗證。
+        from src.market.collect_twse import load_t86
+        inst = load_t86(t86_dir, tickers=set(prices["ticker"].unique()),
+                        audit_dir=audit_dir)
+    else:
+        inst = load_institutional(raw_root)
     factors = adjustment_factors(raw_root)
     prices = apply_adjustment(prices, factors)
 

@@ -50,14 +50,14 @@ def fetch(dataset: str, ticker: str, session: requests.Session,
         except requests.RequestException as exc:
             if attempt == max_retries - 1:
                 raise
-            print(f"    網路錯誤 {exc}；{delay:.0f}s 後重試")
+            print(f"    網路錯誤 {exc}；{delay:.0f}s 後重試", flush=True)
             time.sleep(delay)
             delay = min(delay * 2, 900)
             continue
 
         if resp.status_code in (402, 429):
             # FinMind 免費額度用盡，等待額度重置
-            print(f"    {resp.status_code} 額度限制；{delay:.0f}s 後重試")
+            print(f"    {resp.status_code} 額度限制；{delay:.0f}s 後重試", flush=True)
             time.sleep(delay)
             delay = min(delay * 2, 900)
             continue
@@ -92,7 +92,7 @@ def collect(tickers: list[str], out_root: Path, kinds: list[str] | None = None,
         out_dir = out_root / kind
         out_dir.mkdir(parents=True, exist_ok=True)
         todo = [t for t in tickers if not (out_dir / f"{t}.json").exists()]
-        print(f"[{kind}] {len(todo)}/{len(tickers)} 待抓")
+        print(f"[{kind}] {len(todo)}/{len(tickers)} 待抓", flush=True)
 
         for i, ticker in enumerate(todo, 1):
             body = fetch(dataset, ticker, session)
