@@ -198,6 +198,10 @@ def stage_report() -> pd.DataFrame:
 
     hc = report.health_checks(panel, uni, screening, wc, sp, readiness)
     hc.to_csv(AUDIT / "health_checks.csv", index=False)
+
+    from src.analysis import figures
+    made = figures.run(panel, TABLES, ROOT / "output" / "figures")
+    print(f"圖：{', '.join(made)}")
     return hc
 
 
