@@ -19,8 +19,18 @@ import pandas as pd
 import statsmodels.api as sm
 
 
+MIN_MATCHES_FOR_CORR = 30
+MIN_NONZERO_WEEKS_FOR_CORR = 15
+
+
 def code_vs_name_consistency(matches: pd.DataFrame, weeks: pd.DatetimeIndex) -> pd.DataFrame:
-    """檢定 1：同一檔以代號與以簡稱得到的週序列相關性。"""
+    """檢定 1：同一檔以代號與以簡稱得到的週序列相關性。
+
+    **檢定力守門**：在 506 週的軸上，若簡稱比對總共只命中個位數次，兩條序列幾乎
+    全為零，相關係數會趨近 0——這是算術，不是汙染的證據。若不設下限，長尾個股會
+    被系統性誤判為「可疑」並全數降級，而降級本身又與規模相關，正好製造出 H6 要
+    檢定的那種偏誤。因此樣本不足者記為 `insufficient` 而非 `fail`。
+    """
     rows = []
     for ticker, grp in matches.groupby("ticker"):
         code = (grp[grp["match_mode"] == "code"].groupby("week").size()
@@ -28,12 +38,21 @@ def code_vs_name_consistency(matches: pd.DataFrame, weeks: pd.DatetimeIndex) -> 
         name = (grp[grp["match_mode"] != "code"].groupby("week").size()
                 .reindex(weeks, fill_value=0))
         n_code, n_name = int(code.sum()), int(name.sum())
-        if n_code >= 5 and n_name >= 5 and code.std() > 0 and name.std() > 0:
-            corr = float(np.corrcoef(np.log1p(code), np.log1p(name))[0, 1])
-        else:
-            corr = np.nan
+        nz_code, nz_name = int((code > 0).sum()), int((name > 0).sum())
+
+        powered = (n_code >= MIN_MATCHES_FOR_CORR
+                   and n_name >= MIN_MATCHES_FOR_CORR
+                   and nz_code >= MIN_NONZERO_WEEKS_FOR_CORR
+                   and nz_name >= MIN_NONZERO_WEEKS_FOR_CORR
+                   and code.std() > 0 and name.std() > 0)
+        corr = (float(np.corrcoef(np.log1p(code), np.log1p(name))[0, 1])
+                if powered else np.nan)
         rows.append({"ticker": ticker, "n_code_matches": n_code,
-                     "n_name_matches": n_name, "code_name_corr": corr})
+                     "n_name_matches": n_name,
+                     "n_nonzero_weeks_code": nz_code,
+                     "n_nonzero_weeks_name": nz_name,
+                     "corr_test_powered": powered,
+                     "code_name_corr": corr})
     return pd.DataFrame(rows)
 
 
@@ -126,7 +145,12 @@ def run(matches_path: Path, panel_path: Path, universe_cfg: Path,
 
     code_only = set(cfg.get("code_only_tickers", []))
     rep["already_code_only"] = rep["ticker"].isin(code_only)
-    rep["corr_fail"] = (rep["code_name_corr"] < min_corr) & rep["code_name_corr"].notna()
+    # 只有檢定力足夠時，低相關才算「未通過」；否則記為未檢定
+    rep["corr_fail"] = (rep["corr_test_powered"].fillna(False)
+                        & (rep["code_name_corr"] < min_corr))
+    rep["corr_verdict"] = np.where(
+        ~rep["corr_test_powered"].fillna(False), "insufficient_power",
+        np.where(rep["corr_fail"], "fail", "pass"))
     rep["recommend_demote_to_code_only"] = rep["corr_fail"] & ~rep["already_code_only"]
 
     def tier(r):
@@ -134,13 +158,16 @@ def run(matches_path: Path, panel_path: Path, universe_cfg: Path,
             return "C_suspect_no_comovement"
         if r["corr_fail"] or r["already_code_only"]:
             return "B_code_only"
+        if r["corr_verdict"] == "insufficient_power":
+            return "D_corr_untested"
         return "A_clean"
 
     rep["match_quality_tier"] = rep.apply(tier, axis=1)
 
     audit_dir.mkdir(parents=True, exist_ok=True)
     cols = ["ticker", "name_short", "sector", "n_code_matches", "n_name_matches",
-            "code_name_corr", "corr_fail", "already_code_only",
+            "n_nonzero_weeks_code", "n_nonzero_weeks_name", "corr_test_powered",
+            "code_name_corr", "corr_verdict", "corr_fail", "already_code_only",
             "recommend_demote_to_code_only", "n_obs", "beta_turnover", "t_turnover",
             "beta_absret", "t_absret", "comovement_pass", "comovement_note",
             "match_quality_tier"]
@@ -153,7 +180,8 @@ def run(matches_path: Path, panel_path: Path, universe_cfg: Path,
 
     print(f"效度篩檢：A_clean {int((rep['match_quality_tier'] == 'A_clean').sum())}、"
           f"B_code_only {int((rep['match_quality_tier'] == 'B_code_only').sum())}、"
-          f"C_suspect {int((rep['match_quality_tier'] == 'C_suspect_no_comovement').sum())}")
+          f"C_suspect {int((rep['match_quality_tier'] == 'C_suspect_no_comovement').sum())}、"
+          f"D_corr_untested {int((rep['match_quality_tier'] == 'D_corr_untested').sum())}")
     print(f"建議新增降級 {int(rep['recommend_demote_to_code_only'].sum())} 檔；"
           f"人工抽驗樣本 {len(sample)} 篇")
     return rep

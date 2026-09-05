@@ -22,6 +22,7 @@ from src.universe.name_matching import build_matcher
 
 def build_matches(ptt_root: Path, universe_cfg: Path, trading_days_csv: Path,
                   out_path: Path, audit_dir: Path,
+                  max_tickers_per_article: int = 15,
                   progress_every: int = 20000) -> pd.DataFrame:
     cfg = yaml.safe_load(universe_cfg.read_text(encoding="utf-8"))
     matcher = build_matcher(cfg)
@@ -73,6 +74,26 @@ def build_matches(ptt_root: Path, universe_cfg: Path, trading_days_csv: Path,
             print(f"  已處理 {n_articles:,} 篇，累計配對 {len(rows):,}", flush=True)
 
     df = pd.DataFrame(rows)
+
+    # --- 大量清單型貼文的標記 ---
+    # 「加權股價指數成分股暨市值比重」「非擔任主管職務之全時員工薪資」「本週小小
+    # 程式選股」這類貼文一次列出數十至兩百多檔代號。它們是資料傾印，不是對任一
+    # 個股的關注；不處理的話，少數文章會貢獻近半的配對列，並在覆蓋熱圖上造出
+    # 2018–19 那條假的垂直帶。
+    # 依 PRD §4.3 的精神：**標記而非靜默刪除**，讓門檻可做敏感度測試。
+    if not df.empty:
+        per_article = df.groupby("article_id")["ticker"].transform("nunique")
+        df["n_tickers_in_article"] = per_article
+        df["is_bulk_listing"] = per_article > max_tickers_per_article
+        bulk = (df[df["is_bulk_listing"]].drop_duplicates("article_id")
+                [["article_id", "timestamp", "category", "n_tickers_in_article"]])
+        bulk.sort_values("n_tickers_in_article", ascending=False).to_csv(
+            audit_dir / "ptt_bulk_listing_articles.csv", index=False)
+        n_bulk_articles = int(df.loc[df["is_bulk_listing"], "article_id"].nunique())
+        n_bulk_rows = int(df["is_bulk_listing"].sum())
+    else:
+        n_bulk_articles = n_bulk_rows = 0
+
     out_path.parent.mkdir(parents=True, exist_ok=True)
     df.to_parquet(out_path, index=False)
 
@@ -85,7 +106,11 @@ def build_matches(ptt_root: Path, universe_cfg: Path, trading_days_csv: Path,
     matched_articles = df["article_id"].nunique() if not df.empty else 0
     print(f"文章 {n_articles:,}；有配對 {matched_articles:,} "
           f"({matched_articles / max(n_articles, 1):.1%})；"
-          f"配對列 {len(df):,}；排除 {len(excluded)}；推文總計 {n_pushes_total:,}（無時戳，不使用）")
+          f"配對列 {len(df):,}；排除 {len(excluded)}；"
+          f"推文總計 {n_pushes_total:,}（無時戳，不使用）")
+    print(f"大量清單型貼文（>{max_tickers_per_article} 檔）：{n_bulk_articles:,} 篇，"
+          f"佔配對列 {n_bulk_rows:,}（{n_bulk_rows / max(len(df), 1):.1%}）——已標記 "
+          f"is_bulk_listing，主規格排除")
     return df
 
 
@@ -98,9 +123,10 @@ def main() -> None:
     p.add_argument("--trading-days", default="data/interim/trading_days.csv")
     p.add_argument("--out", default="data/interim/ptt_matches.parquet")
     p.add_argument("--audit", default="audit")
+    p.add_argument("--max-tickers-per-article", type=int, default=15)
     a = p.parse_args()
     build_matches(Path(a.ptt_root), Path(a.universe), Path(a.trading_days),
-                  Path(a.out), Path(a.audit))
+                  Path(a.out), Path(a.audit), a.max_tickers_per_article)
 
 
 if __name__ == "__main__":

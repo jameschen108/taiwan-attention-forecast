@@ -17,6 +17,10 @@ from src.features.imbalance import abnormal_turnover, weekly_non_inst_roi
 from src.features.sessions import week_of
 
 
+def att_cfg_exclude_bulk(settings: dict) -> bool:
+    return bool(settings.get("attention", {}).get("exclude_bulk_listing", True))
+
+
 def _weekly_market(daily: pd.DataFrame, trading_days: set,
                    settings: dict) -> pd.DataFrame:
     """日資料 → 週資料：週一開盤至週五收盤報酬、周轉率、ROI、流動性。"""
@@ -71,6 +75,12 @@ def build_panel(matches_path: Path, daily_path: Path, universe_path: Path,
     uni = pd.read_csv(universe_path, dtype={"ticker": str})
     uni["listing_date"] = pd.to_datetime(uni["listing_date"])
     matches = pd.read_parquet(matches_path)
+    # 大量清單型貼文自關注度計數排除（PRD §3.10 精神：測度效度優先）
+    n_all_matches = len(matches)
+    if att_cfg_exclude_bulk(settings) and "is_bulk_listing" in matches.columns:
+        matches = matches[~matches["is_bulk_listing"]].copy()
+        print(f"  排除大量清單型貼文的配對列 {n_all_matches - len(matches):,} "
+              f"（{1 - len(matches) / max(n_all_matches, 1):.1%}）")
     daily = pd.read_parquet(daily_path)
     cal = pd.read_csv(trading_days_path, parse_dates=["date"])
     trading_days = {d.date() for d in cal["date"]}

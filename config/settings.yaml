@@ -17,6 +17,11 @@ attention:
   min_periods: 8                 # 不足 8 週維持缺值
   transform: log1p               # PTT 的零是真實的零（PRD §3.2）
   sparsity_lookback_weeks: 52
+  # 大量清單型貼文（指數成分股表、薪資表、程式選股輸出）一次列出數十至兩百多檔，
+  # 是資料傾印而非對個股的關注。超過此門檻的文章標記 is_bulk_listing，主規格排除。
+  max_tickers_per_article: 15
+  exclude_bulk_listing: true
+  bulk_listing_sensitivity_grid: [5, 10, 15, 20, 30, 999]
 
 sparsity:
   # PRD §3.2.1 三個 tier 的門檻；§5.11-1 對此做敏感度測試

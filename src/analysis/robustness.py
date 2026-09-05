@@ -120,6 +120,13 @@ def run(panel: pd.DataFrame, settings: dict) -> list[ModelResult]:
         note=("Yahoo 新聞管道依決策暫緩抓取（僅在 PTT 結果不佳時啟用），"
               "因此 §5.9 跨管道比較與 news_count 控制項本輪未執行")))
 
+    # 15. 大量清單型貼文的門檻敏感度（PRD 未列，但實測顯示它是最大的測度威脅：
+    #     不處理時 2.8% 的文章會貢獻 36.8% 的配對列）
+    out.append(ModelResult(
+        "R15 大量清單型貼文門檻", "SKIPPED",
+        note=("需以不同 max_tickers_per_article 重建面板；"
+              "執行方式見 scripts/sensitivity_bulk_listing.py")))
+
     return out
 
 

@@ -1,0 +1,10 @@
+check,value
+market_dividend_empty,0
+market_dividend_missing,267
+market_dividend_ok,0
+market_inst_empty,0
+market_inst_missing,244
+market_inst_ok,23
+market_price_empty,0
+market_price_missing,0
+market_price_ok,267

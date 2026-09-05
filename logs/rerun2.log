@@ -1,0 +1,47 @@
+
+=== analysis ===
+[T3] 主迴歸
+  T3_main_regressions: 估計 5 個規格，跳過 0 個
+[T5] 機制檢定
+  T5_mechanism: 估計 2 個規格，跳過 0 個
+[T4] 認知投入分解（dense）
+  T4_effort: 估計 4 個規格，跳過 0 個
+[T6] 異質性 ＋ 反轉（聯立）
+  T6_heterogeneity_reversal: 估計 32 個規格，跳過 0 個
+[T7] 起始事件
+  T7_initiation: 估計 4 個規格，跳過 0 個
+  CAR 路徑：476 個事件，平行趨勢 未通過
+[T8] 產業
+  T8_sector_spillover: 估計 4 個規格，跳過 0 個
+[T9] 投資組合
+[T10] 補班日
+  檢定力偏低（8 個事件週）：須以 wild cluster bootstrap 報告，並明確標示為探索性
+  T10_makeup: 估計 1 個規格，跳過 0 個
+[T12] 穩健性
+  穩健性 17/22 項完成估計
+--- analysis 完成 210.1s
+
+=== report ===
+/Users/jameschen/GItHub/taiwan-attention-long-tail/src/analysis/figures.py:192: UserWarning: Glyph 12539 (\N{KATAKANA MIDDLE DOT}) missing from current font.
+  fig.tight_layout()
+/Users/jameschen/GItHub/taiwan-attention-long-tail/src/analysis/figures.py:193: UserWarning: Glyph 12539 (\N{KATAKANA MIDDLE DOT}) missing from current font.
+  fig.savefig(out, bbox_inches="tight")
+圖：F1_coverage.png, F2_specification_curve.png, F3_beta_by_coverage.png, F4_car_path.png, F5_portfolio.png
+
+驗收門檻：14/16 通過
+  ✗ dense 檔數（§8.2）：要求 ≥ 40 檔（否則 H2 無法識別，須觸發 Yahoo 備案），實得 23
+  ✗ 正式主表可產出（§8.4）：要求 formal_controls_available 為 True，實得 False
+--- report 完成 5.0s
+
+=== 各表估計規格數 ===
+  T10_makeup: 1
+  T12_robustness: 17
+  T3_main_regressions: 5
+  T4_effort: 4
+  T5_mechanism: 2
+  T6_heterogeneity_reversal: 32
+  T7_initiation: 4
+  T8_sector_spillover: 4
+  T9_portfolios: 6
+
+總耗時 215.1s

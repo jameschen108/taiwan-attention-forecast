@@ -1,0 +1,2 @@
+formal_main_return,formal_controls_available,price_adjustment_verified,missing_controls,n_rows,n_tickers,n_weeks,verdict
+False,False,True,news_count;selling_expense_to_sales;analyst_count;forecast_dispersion;forecast_revision,123828,260,506,控制變數不齊 → 所有結果標記為 diagnostic（PRD §3.8）

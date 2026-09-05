@@ -1,0 +1,2 @@
+corr_all_weekday,corr_all_weekend,gap,n_obs,paper_benchmark_weekday,paper_benchmark_weekend,pattern_matches_paper
+0.9383966253653957,0.40042145622038483,0.5379751691450109,121948,0.9,0.4,True

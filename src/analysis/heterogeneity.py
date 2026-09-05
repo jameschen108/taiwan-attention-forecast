@@ -129,11 +129,29 @@ def joint_reading(interaction: list[ModelResult],
         })
     rev = pd.DataFrame(rev_rows)
 
-    if rev.empty:
-        return inter.assign(joint_reading="反轉檢定無結果，無法聯立判讀")
+    # 兩塊是**不同維度**（調節變數 vs. 稀疏度分組），不可外部合併成一張寬表；
+    # 改為上下堆疊並以 `block` 欄標示，讓聯立判讀的兩個輸入並列可讀。
+    rows_out = []
+    for _, r in inter.iterrows():
+        rows_out.append({
+            "block": "A_交互項（H6）",
+            "key": r["moderator"],
+            "beta": r["beta_interaction"],
+            "t": r["t_interaction"],
+            "n_obs": r["n_obs"],
+            "flag": ("交互項顯著為負" if r["interaction_negative_sig"]
+                     else "交互項不顯著或為正"),
+            "joint_reading": "",
+        })
 
-    # 每組是否出現顯著的後續反轉：h≥2 有顯著負係數
-    verdicts = []
+    if rev.empty:
+        rows_out.append({"block": "B_反轉（H5）", "key": "", "beta": np.nan,
+                         "t": np.nan, "n_obs": np.nan, "flag": "",
+                         "joint_reading": "反轉檢定無結果，無法聯立判讀"})
+        return pd.DataFrame(rows_out)
+
+    any_neg_interaction = bool(inter["interaction_negative_sig"].any()
+                               if not inter.empty else False)
     for group, g in rev.groupby("group"):
         h1 = g[g["horizon"] == 1]
         later = g[g["horizon"] >= 2]
@@ -145,11 +163,35 @@ def joint_reading(interaction: list[ModelResult],
             reading = "有效果且後續反轉 → 支持價格壓力管道"
         else:
             reading = "有效果且不反轉 → 支持資訊處理管道"
-        verdicts.append({"group": group, "h1_significant": has_effect,
-                         "reversal_detected": has_reversal,
-                         "joint_reading": reading})
-    return pd.DataFrame(verdicts).merge(
-        inter, how="outer", left_on="group", right_on="moderator")
+        rows_out.append({
+            "block": "B_反轉（H5）",
+            "key": group,
+            "beta": float(h1["beta"].iat[0]) if not h1.empty else np.nan,
+            "t": float(h1["t"].iat[0]) if not h1.empty else np.nan,
+            "n_obs": float(h1["n_obs"].iat[0]) if not h1.empty else np.nan,
+            "flag": (f"h1{'顯著' if has_effect else '不顯著'}／"
+                     f"後續{'有' if has_reversal else '無'}反轉"),
+            "joint_reading": reading,
+        })
+
+    # PRD §2.3、§5.5：單獨的負交互項不構成識別，必須與反轉聯立
+    overall_effect = any(r["flag"].startswith("h1顯著") for r in rows_out
+                         if r["block"] == "B_反轉（H5）")
+    overall_reversal = any("後續有反轉" in r["flag"] for r in rows_out
+                           if r["block"] == "B_反轉（H5）")
+    if not overall_effect:
+        verdict = ("主效果本身不顯著，H6 與 H5 皆不具判讀力——"
+                   "兩條管道都無法被本樣本區分")
+    elif any_neg_interaction and overall_reversal:
+        verdict = "交互項顯著為負 且 有反轉 → 價格壓力（小型股流動性衝擊）"
+    elif any_neg_interaction and not overall_reversal:
+        verdict = "交互項顯著為負 且 無反轉 → 資訊處理（資訊環境假說）"
+    else:
+        verdict = "交互項未顯著為負，H6 不成立；效果未集中於低覆蓋股"
+    rows_out.append({"block": "C_聯立判讀", "key": "整體", "beta": np.nan,
+                     "t": np.nan, "n_obs": np.nan, "flag": "",
+                     "joint_reading": verdict})
+    return pd.DataFrame(rows_out)
 
 
 def fama_macbeth(panel: pd.DataFrame, xs: list[str],

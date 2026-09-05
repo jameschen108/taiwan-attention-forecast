@@ -41,6 +41,8 @@ def quantile_portfolios(panel: pd.DataFrame, signal: str = "abn_attention_weeken
         d = d[d["value"].fillna(0) >= min_weekly_value]
 
     rows = []
+    prev_long: set[str] = set()
+    prev_short: set[str] = set()
     for week, g in d.groupby("week"):
         if len(g) < n_q * min_names_per_bucket:
             continue
@@ -50,6 +52,8 @@ def quantile_portfolios(panel: pd.DataFrame, signal: str = "abn_attention_weeken
         except ValueError:
             continue
         rec = {"week": week, "n_names": len(g)}
+        long_names: set[str] = set()
+        short_names: set[str] = set()
         for q, gq in g.groupby("q", observed=True):
             if weight == "value" and gq["market_cap"].notna().any():
                 w = gq["market_cap"].fillna(0)
@@ -58,8 +62,24 @@ def quantile_portfolios(panel: pd.DataFrame, signal: str = "abn_attention_weeken
                 r = float(gq[ret_col].mean())
             rec[f"q{int(q)}"] = r
             rec[f"n_q{int(q)}"] = len(gq)
+            if int(q) == n_q:
+                long_names = set(gq["ticker"])
+            elif int(q) == 1:
+                short_names = set(gq["ticker"])
         if f"q{n_q}" in rec and "q1" in rec:
             rec["long_short"] = rec[f"q{n_q}"] - rec["q1"]
+
+        # 實際換手率：與上週相比換掉的名單比例（兩腳平均）。
+        # 假設每週 100% 換手會高估成本——訊號本身有持續性。
+        def churn(now: set[str], prev: set[str]) -> float:
+            if not prev or not now:
+                return 1.0
+            return len(now - prev) / len(now)
+
+        rec["turnover_long"] = churn(long_names, prev_long)
+        rec["turnover_short"] = churn(short_names, prev_short)
+        rec["turnover_avg"] = (rec["turnover_long"] + rec["turnover_short"]) / 2
+        prev_long, prev_short = long_names, short_names
         rows.append(rec)
     return pd.DataFrame(rows).sort_values("week").reset_index(drop=True)
 
@@ -75,9 +95,14 @@ def summarize(port: pd.DataFrame, settings: dict, label: str,
     cfg = settings["portfolio"]
     cost = round_trip_cost(cfg["fee_rate"], cfg["fee_discount"],
                            cfg["tax_rate"], cfg["slippage_bps"])
-    # 多空兩腳每週各換手一次
-    weekly_cost = cost * 2
-    net = ls - weekly_cost
+    # 成本按**實際換手率**計，而非假設每週 100% 換手——訊號本身有持續性，
+    # 假設全額換手會高估成本並讓成本後結論失真。兩腳各計一次。
+    turnover = port.loc[ls.index, "turnover_avg"].fillna(1.0)
+    weekly_cost_series = cost * 2 * turnover
+    weekly_cost = float(weekly_cost_series.mean())
+    net = ls - weekly_cost_series
+    # 保留 100% 換手的保守上界作為對照
+    worst_case_cost = cost * 2
 
     def stats(s: pd.Series) -> tuple[float, float, float]:
         mean = float(s.mean())
@@ -100,6 +125,9 @@ def summarize(port: pd.DataFrame, settings: dict, label: str,
         "mean_ls_net_weekly": m_n,
         "t_net": t_n,
         "weekly_cost_assumed": weekly_cost,
+        "mean_weekly_turnover": float(turnover.mean()),
+        "weekly_cost_full_turnover": worst_case_cost,
+        "mean_ls_net_full_turnover": m_g - worst_case_cost,
         "sd_weekly": sd,
         "mechanical_annualized_gross": m_g * 52,
         "mechanical_annualized_net": m_n * 52,

@@ -163,11 +163,16 @@ def results_to_frame(results: list[ModelResult]) -> pd.DataFrame:
 # 規格
 # ---------------------------------------------------------------------------
 
+# 注意：`listing_age_years` 不可放進雙向固定效果規格——上市年資是
+# （週 − 上市日）的線性組合，會被個股與週固定效果完全吸收。它只在無固定效果的
+# 規格（例如 Fama-MacBeth）中有識別力。
 BASE_CONTROLS = [
     "att_zero_base", "ret_lag1", "ret_lag4", "ret_lag25",
     "log_market_cap", "turnover", "amihud", "foreign_holding_pct",
-    "listing_age_years",
 ]
+
+# 無固定效果的橫斷面規格（Fama-MacBeth）可加入的樣本結構變數
+CROSS_SECTION_CONTROLS = BASE_CONTROLS + ["listing_age_years", "is_ky"]
 
 
 def add_derived(panel: pd.DataFrame) -> pd.DataFrame:
