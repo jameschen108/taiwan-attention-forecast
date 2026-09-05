@@ -1,0 +1,4 @@
+sparsity_tier,n_ticker_weeks,n_tickers,n_initiation,n_initiation_weekend,n_initiation_weekday,n_tickers_with_initiation,share_zero_attention_weeks
+dense,14305,89,0,0,0,0,0.10800419433764417
+sparse,93915,259,2027,341,1768,231,0.6703721450247564
+silent,15373,254,707,138,610,157,0.8858388083002667

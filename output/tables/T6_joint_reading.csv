@@ -1,0 +1,6 @@
+group,h1_significant,reversal_detected,joint_reading,moderator,beta_interaction,t_interaction,p_interaction,interaction_negative_sig,n_obs
+,,,,amihud,-0.0001268883588229141,-0.9979631596682165,0.31829957282818166,False,103515.0
+dense,False,False,無初始效果，反轉檢定不具判讀力,,,,,,
+,,,,log_att_mean_level_52,0.00010684987536124233,0.8317542489451882,0.4055496054377583,False,103515.0
+sparse,False,False,無初始效果，反轉檢定不具判讀力,,,,,,
+全樣本,False,False,無初始效果，反轉檢定不具判讀力,,,,,,

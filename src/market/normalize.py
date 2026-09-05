@@ -85,12 +85,22 @@ def build_trading_calendar(prices: pd.DataFrame, out_path: Path) -> pd.DataFrame
     return cal
 
 
-def adjustment_factors(raw_root: Path) -> pd.DataFrame:
+def adjustment_factors(raw_root: Path,
+                       exrights_csv: Path | None = None) -> pd.DataFrame:
     """由除權息前後參考價推導還原因子。
 
-    factor = after_price / before_price（< 1）。除權息當日起，之前的價格須乘上
+    factor = after_price / before_price（≤ 1）。除權息當日起，之前的價格須乘上
     累積因子才能與之後可比。
+
+    主來源為 TWSE 除權除息計算結果表（全市場、含 2014–2025），FinMind 的逐檔
+    dividend 資料為備援。
     """
+    if exrights_csv is not None and exrights_csv.exists():
+        df = pd.read_csv(exrights_csv, dtype={"ticker": str},
+                         parse_dates=["date"])
+        df = df[(df["factor"] > 0.3) & (df["factor"] <= 1.0001)]
+        return df[["ticker", "date", "factor"]].sort_values(["ticker", "date"])
+
     div_dir = raw_root / "dividend"
     if not div_dir.exists():
         return pd.DataFrame(columns=["ticker", "date", "factor"])
@@ -142,7 +152,9 @@ def apply_adjustment(prices: pd.DataFrame, factors: pd.DataFrame) -> pd.DataFram
 
 
 def build_daily_panel(raw_root: Path, out_dir: Path, audit_dir: Path,
-                      t86_dir: Path | None = None) -> pd.DataFrame:
+                      t86_dir: Path | None = None,
+                      exrights_csv: Path | None = None,
+                      shareholding_csv: Path | None = None) -> pd.DataFrame:
     prices = load_prices(raw_root)
     if t86_dir is not None and t86_dir.exists():
         # 既有 T86 封存涵蓋 2015-01 ~ 2024-12，正好覆蓋主樣本，且不受 API 額度限制。
@@ -152,33 +164,48 @@ def build_daily_panel(raw_root: Path, out_dir: Path, audit_dir: Path,
                         audit_dir=audit_dir)
     else:
         inst = load_institutional(raw_root)
-    factors = adjustment_factors(raw_root)
+    factors = adjustment_factors(raw_root, exrights_csv)
     prices = apply_adjustment(prices, factors)
 
     daily = prices.merge(inst, on=["ticker", "date"], how="left")
     daily["venue"] = "TWSE"
 
-    # 股權分散（外資持股比率、流通在外股數）
-    sh_dir = raw_root / "shareholding"
-    if sh_dir.exists() and any(sh_dir.glob("*.json")):
-        sh = _load(sh_dir).rename(columns={
-            "stock_id": "ticker",
-            "ForeignInvestmentSharesRatio": "foreign_holding_pct",
-            "NumberOfSharesIssued": "shares_outstanding",
-        })
-        sh["date"] = pd.to_datetime(sh["date"])
-        sh["ticker"] = sh["ticker"].astype(str)
+    # 股權分散（外資及陸資持股比率 proxy、流通在外股數）
+    sh = None
+    if shareholding_csv is not None and shareholding_csv.exists():
+        sh = pd.read_csv(shareholding_csv, dtype={"ticker": str},
+                         parse_dates=["date"])
         sh = sh[["ticker", "date", "foreign_holding_pct", "shares_outstanding"]]
+    else:
+        sh_dir = raw_root / "shareholding"
+        if sh_dir.exists() and any(sh_dir.glob("*.json")):
+            sh = _load(sh_dir).rename(columns={
+                "stock_id": "ticker",
+                "ForeignInvestmentSharesRatio": "foreign_holding_pct",
+                "NumberOfSharesIssued": "shares_outstanding",
+            })
+            sh["date"] = pd.to_datetime(sh["date"])
+            sh["ticker"] = sh["ticker"].astype(str)
+            sh = sh[["ticker", "date", "foreign_holding_pct", "shares_outstanding"]]
+
+    if sh is not None and not sh.empty:
         daily = daily.merge(sh, on=["ticker", "date"], how="left")
+        # 抽樣頻率低於日頻，以前向填補；期初的空白由後向填補一次
         for col in ("foreign_holding_pct", "shares_outstanding"):
             daily[col] = daily.groupby("ticker")[col].ffill()
+            daily[col] = daily.groupby("ticker")[col].bfill()
     else:
         daily["foreign_holding_pct"] = np.nan
         daily["shares_outstanding"] = np.nan
 
+    daily = daily.sort_values(["ticker", "date"]).reset_index(drop=True)
     daily["market_cap"] = daily["close"] * daily["shares_outstanding"]
     daily["turnover"] = daily["volume"] / daily["shares_outstanding"]
-    daily["amihud"] = (daily["close"].pct_change().abs() / daily["value"].replace(0, np.nan))
+    # 日報酬與 Amihud 必須**逐檔**計算，不可跨個股邊界做 pct_change
+    daily["daily_ret"] = daily.groupby("ticker")["adj_close"].pct_change(
+        fill_method=None)
+    daily["amihud"] = (daily["daily_ret"].abs()
+                       / daily["value"].replace(0, np.nan)) * 1e9
 
     out_dir.mkdir(parents=True, exist_ok=True)
     daily.to_parquet(out_dir / "market_daily.parquet", index=False)

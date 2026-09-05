@@ -41,21 +41,33 @@ def _roc_date(value: str) -> pd.Timestamp | None:
 
 def fetch_range(start: str, end: str, session: requests.Session,
                 max_retries: int = 5) -> list[list]:
-    delay = 5.0
+    delay = 10.0
     for attempt in range(max_retries):
-        resp = session.get(URL, params={"startDate": start, "endDate": end,
-                                        "response": "json"},
-                           headers=HEADERS, timeout=60)
+        try:
+            resp = session.get(URL, params={"startDate": start, "endDate": end,
+                                            "response": "json"},
+                               headers=HEADERS, timeout=90)
+        except requests.RequestException as exc:
+            if attempt == max_retries - 1:
+                raise RuntimeError(f"TWT49U {start}~{end}: {exc}") from exc
+            print(f"    連線錯誤，{delay:.0f}s 後重試：{type(exc).__name__}", flush=True)
+            time.sleep(delay)
+            delay = min(delay * 2, 300)
+            continue
         if resp.status_code == 200:
-            body = resp.json()
+            try:
+                body = resp.json()
+            except ValueError:
+                body = {}
             if body.get("stat") == "OK":
                 return body.get("data") or []
             if "無" in str(body.get("stat", "")):
                 return []
         if attempt == max_retries - 1:
             raise RuntimeError(f"TWT49U {start}~{end}: HTTP {resp.status_code}")
+        print(f"    HTTP {resp.status_code}，{delay:.0f}s 後重試", flush=True)
         time.sleep(delay)
-        delay = min(delay * 2, 120)
+        delay = min(delay * 2, 300)
     return []
 
 
@@ -67,14 +79,20 @@ def collect(start_year: int, end_year: int, out_path: Path,
         for q_start, q_end in (("0101", "0331"), ("0401", "0630"),
                                ("0701", "0930"), ("1001", "1231")):
             s, e = f"{year}{q_start}", f"{year}{q_end}"
+            cache = (raw_dir / f"twt49u_{s}_{e}.json") if raw_dir else None
+            if cache is not None and cache.exists():
+                # 斷點續傳（PRD §4.3 第 4 點）
+                chunk = json.loads(cache.read_text(encoding="utf-8"))
+                rows.extend(chunk)
+                continue
             chunk = fetch_range(s, e, session)
             rows.extend(chunk)
-            if raw_dir is not None:
+            if cache is not None:
                 raw_dir.mkdir(parents=True, exist_ok=True)
-                (raw_dir / f"twt49u_{s}_{e}.json").write_text(
-                    json.dumps(chunk, ensure_ascii=False), encoding="utf-8")
+                cache.write_text(json.dumps(chunk, ensure_ascii=False),
+                                 encoding="utf-8")
             print(f"  {s}~{e}: {len(chunk)} 筆", flush=True)
-            time.sleep(random.uniform(1.5, 3.0))
+            time.sleep(random.uniform(2.0, 4.0))
 
     df = pd.DataFrame(rows, columns=[
         "date_roc", "ticker", "name", "before_price", "reference_price",

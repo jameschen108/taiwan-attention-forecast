@@ -52,6 +52,23 @@ def standardize_within(df: pd.DataFrame, cols: list[str],
     return out
 
 
+def available_controls(df: pd.DataFrame, controls: list[str],
+                       min_coverage: float = 0.5) -> tuple[list[str], list[str]]:
+    """把控制變數分成「可用」與「不可用」。
+
+    PRD §3.8 的缺值政策不可妥協：未取得的控制變數維持缺欄位，不得補零或補均值。
+    正式主表要求欄位齊備才估計（F6）；**診斷輸出**則以可用控制估計，並把被剔除的
+    欄位記入 note，讓讀者知道這組係數少了什麼。
+    """
+    usable, dropped = [], []
+    for col in controls:
+        if col in df.columns and df[col].notna().mean() >= min_coverage:
+            usable.append(col)
+        else:
+            dropped.append(col)
+    return usable, dropped
+
+
 def _prepare(df: pd.DataFrame, y: str, xs: list[str],
              controls: list[str]) -> pd.DataFrame:
     cols = ["ticker", "week", y, *xs, *controls]
@@ -63,7 +80,15 @@ def _prepare(df: pd.DataFrame, y: str, xs: list[str],
 def fit_twoway(df: pd.DataFrame, y: str, xs: list[str], controls: list[str],
                name: str, is_diagnostic: bool = True,
                cluster_time: bool = True) -> ModelResult:
-    """個股 ＋ 週雙向固定效果，個股與週雙重 cluster。"""
+    """個股 ＋ 週雙向固定效果，個股與週雙重 cluster。
+
+    診斷模式下，涵蓋率不足的控制變數會被剔除並記入 note；正式模式（is_diagnostic
+    為 False）則要求控制變數齊備，否則直接中止（PRD §6.2 F6）。
+    """
+    controls, dropped = available_controls(df, controls)
+    if dropped and not is_diagnostic:
+        return ModelResult(name, "SKIPPED",
+                           note=f"正式規格要求控制變數齊備，缺：{';'.join(dropped)}")
     d = _prepare(df, y, xs, controls)
     if d.empty:
         return ModelResult(name, "SKIPPED", note="無有效觀測")
@@ -103,6 +128,7 @@ def fit_twoway(df: pd.DataFrame, y: str, xs: list[str], controls: list[str],
         pvalues={k: float(v) for k, v in res.pvalues.items()},
         stderr={k: float(v) for k, v in res.std_errors.items()},
         rsquared=float(res.rsquared_within),
+        note=("控制變數缺漏（診斷）：" + ";".join(dropped)) if dropped else "",
         tier_composition={str(k): int(v) for k, v in tiers.items()},
         is_diagnostic=is_diagnostic,
     )

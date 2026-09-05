@@ -1,0 +1,2 @@
+n_rows,n_tickers,n_weeks,rows_dropped_pre_listing,first_week,last_week,n_dense_rows,n_sparse_rows,n_silent_rows,n_with_ret_next,n_with_roi_next
+123828,260,506,11274,2015-05-03,2025-01-05,14305,93915,15373,122192,111202

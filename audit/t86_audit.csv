@@ -1,0 +1,2 @@
+n_files,n_empty_days,n_rows,n_tickers,first_date,last_date,schema_versions,n_net_mismatch,unit
+2609,178,559792,260,2015-01-05,2024-12-31,16欄=718天;19欄=1713天,0,shares (股)

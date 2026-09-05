@@ -68,7 +68,11 @@ def build_attention_panel(matches: pd.DataFrame, weeks: pd.DatetimeIndex,
     att = settings["attention"]
     spa = settings["sparsity"]
 
-    windows = ["all", "weekday", "weekend", "intraday", "non_trading"]
+    # 日曆切法（weekday/weekend，與原論文可比）與交易時段切法
+    # （intraday/non_trading，台灣制度延伸）是**兩個不同欄位**，兩者都必須產出，
+    # 不可互相取代（PRD §3.2）。
+    calendar_windows = ["weekday", "weekend"]
+    session_windows = ["intraday", "non_trading"]
     efforts = ["high_effort", "mid_effort", "low_effort"]
 
     idx = pd.MultiIndex.from_product([tickers, weeks], names=["ticker", "week"])
@@ -81,8 +85,10 @@ def build_attention_panel(matches: pd.DataFrame, weeks: pd.DatetimeIndex,
         panel[f"att_{label}"] = series
 
     counts_for(pd.Series(True, index=matches.index), "all")
-    for w in windows[1:]:
+    for w in calendar_windows:
         counts_for(matches["window"] == w, w)
+    for w in session_windows:
+        counts_for(matches["session"] == w, w)
     for e in efforts:
         counts_for(matches["effort"] == e, e)
         counts_for((matches["effort"] == e) & (matches["window"] == "weekend"),

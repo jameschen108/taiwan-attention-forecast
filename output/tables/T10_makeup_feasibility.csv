@@ -1,0 +1,2 @@
+n_makeup_trading_saturdays,makeup_dates,n_makeup_weeks_in_panel,n_makeup_weeks_usable,n_usable_obs,n_tickers_in_makeup_weeks,effective_clusters,t_critical_at_cluster_df,mde_in_cluster_se_units,verdict,last_makeup_saturday,note
+9,2014-12-27;2016-01-30;2016-06-04;2016-09-10;2017-02-18;2017-06-03;2017-09-30;2018-03-31;2018-12-22,8,8,1904,244,8,2.3646242515927844,3.2046242515927843,檢定力偏低（8 個事件週）：須以 wild cluster bootstrap 報告，並明確標示為探索性,2018-12-22,有效群集數等於事件週數而非觀測數；標準誤須以 wild cluster bootstrap 或依事件週數調整的臨界值處理（PRD §5.10）
