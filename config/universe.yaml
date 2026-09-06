@@ -38,6 +38,7 @@ code_only_tickers:
 - '1109'
 - '1203'
 - '1210'
+- '1216'
 - '1303'
 - '1402'
 - '1414'
@@ -53,6 +54,7 @@ code_only_tickers:
 - '1611'
 - '1615'
 - '1736'
+- '1806'
 - '2010'
 - '2012'
 - '2101'
@@ -70,6 +72,7 @@ code_only_tickers:
 - '2762'
 - '2845'
 - '2903'
+- '2905'
 - '2908'
 - '2910'
 - '2911'
@@ -114,6 +117,9 @@ code_only_reason:
   '2468': 華經
   '2390': 云辰
   '2423': 固緯
+  '1216': 統一（統一證券／投信／投顧／獅／動詞「統一」：20 筆抽驗 18 筆誤配）
+  '2905': 三商（三商壽／銀／餐飲／家購／巧福／人壽：17 筆抽驗全數誤配）
+  '1806': 冠軍（銷售冠軍／冠軍教練／交投冠軍：抽驗 6 筆全數為普通名詞）
   '2912': 統一超
   '8454': 富邦媒
   '2727': 王品
@@ -281,6 +287,22 @@ tickers:
     - text: 統一
       match_mode: name_with_context
       priority: 2
+      blocked_after:
+      - 證
+      - 投信
+      - 投顧
+      - 投
+      - 超
+      - 獅
+      - 發票
+      - 數位
+      - 夢公園
+      - 時代
+      - 生機
+      - 速達
+      - 陽光
+      blocked_before:
+      - 台灣
   '1217':
     name_short: 愛之味
     sector: 食品
@@ -358,6 +380,10 @@ tickers:
     - text: 台聚
       match_mode: name
       priority: 2
+      blocked_after:
+      - 集
+      blocked_before:
+      - 平
   '1305':
     name_short: 華夏
     sector: 塑膠
@@ -1014,6 +1040,13 @@ tickers:
     - text: 華電
       match_mode: name_with_context
       priority: 2
+      blocked_after:
+      - 子
+      blocked_before:
+      - 中
+      - 聯
+      - 福
+      - 大
   '1604':
     name_short: 聲寶
     sector: 電器電纜
@@ -1036,6 +1069,8 @@ tickers:
     - text: 華新麗華
       match_mode: name_with_context
       priority: 4
+      blocked_after:
+      - 科
   '1608':
     name_short: 華榮
     sector: 電器電纜
@@ -1443,6 +1478,8 @@ tickers:
     - text: 永豐餘
       match_mode: name
       priority: 3
+      blocked_after:
+      - 生技
   '1909':
     name_short: 榮成
     sector: 造紙
@@ -1476,6 +1513,12 @@ tickers:
     - text: 中鋼
       match_mode: name_with_context
       priority: 2
+      blocked_after:
+      - 構
+      - 鴻
+      blocked_before:
+      - 台灣
+      - 興
   '2006':
     name_short: 東和鋼鐵
     sector: 鋼鐵
@@ -1964,6 +2007,19 @@ tickers:
     - text: 新興
       match_mode: name_with_context
       priority: 2
+      blocked_after:
+      - 市場
+      - 國家
+      - 經濟體
+      - 產業
+      - 債
+      - 電商
+      - 科技
+      - 應用
+      - 經濟
+      blocked_before:
+      - '-'
+      - －
   '2606':
     name_short: 裕民
     sector: 航運
@@ -2930,6 +2986,14 @@ tickers:
     - text: 三商
       match_mode: name_with_context
       priority: 2
+      blocked_after:
+      - 壽
+      - 銀
+      - 美邦
+      - 餐飲
+      - 家購
+      - 電
+      - 行
   '2906':
     name_short: 高林
     sector: 貿易百貨

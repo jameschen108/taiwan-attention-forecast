@@ -105,21 +105,33 @@ def manual_review_sample(matches: pd.DataFrame, panel: pd.DataFrame,
     m = matches.merge(tier_by_ticker.rename("sparsity_tier"),
                       left_on="ticker", right_index=True, how="left")
 
+    # 抽樣母體限定**實際進入分析的配對**。若從全部配對抽樣，近半數會落在主規格
+    # 根本不使用的大量清單型貼文上，量出來的正確率不對應任何實際使用的數字。
+    if "is_bulk_listing" in m.columns:
+        analysis, bulk = m[~m["is_bulk_listing"]], m[m["is_bulk_listing"]]
+    else:
+        analysis, bulk = m, m.iloc[0:0]
+
     parts = []
-    for tier, grp in m.groupby("sparsity_tier"):
+    for tier, grp in analysis.groupby("sparsity_tier"):
         n = min(per_tier, len(grp))
         parts.append(grp.sample(n, random_state=int(rng.integers(1 << 31)))
                      .assign(stratum=f"tier:{tier}"))
     for ticker in collision_members:
-        grp = m[m["ticker"] == ticker]
+        grp = analysis[analysis["ticker"] == ticker]
         if grp.empty:
             continue
         n = min(per_member, len(grp))
         parts.append(grp.sample(n, random_state=int(rng.integers(1 << 31)))
                      .assign(stratum=f"collision:{ticker}"))
+    # 獨立分層：檢核 is_bulk_listing 旗標本身是否正確（這是測度上的一個自由度）
+    if not bulk.empty:
+        n = min(40, len(bulk))
+        parts.append(bulk.sample(n, random_state=int(rng.integers(1 << 31)))
+                     .assign(stratum="bulk_flag"))
 
     sample = pd.concat(parts, ignore_index=True)
-    sample["human_verdict"] = ""       # correct / wrong / ambiguous — 待人工填寫
+    sample["human_verdict"] = ""       # correct / wrong / ambiguous — 待判讀填寫
     sample["human_note"] = ""
     return sample[["stratum", "ticker", "article_id", "timestamp", "category",
                    "match_mode", "effort", "sparsity_tier",
