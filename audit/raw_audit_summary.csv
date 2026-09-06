@@ -9,3 +9,15 @@ market_note_sources,三大法人=TWSE T86 封存；除權息=TWSE TWT49U；FinMi
 market_price_empty,0
 market_price_missing,0
 market_price_ok,267
+ptt_first_month,2015-04
+ptt_last_month,2025-01
+ptt_month_gaps,
+ptt_n_articles,251858
+ptt_n_duplicate_ids,0
+ptt_n_empty_body,208
+ptt_n_files,251858
+ptt_n_missing_timestamp_field,25
+ptt_n_month_gaps,0
+ptt_n_months,118
+ptt_n_pushes,11029966
+ptt_pushes_have_author_and_timestamp,False

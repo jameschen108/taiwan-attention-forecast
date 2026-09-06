@@ -23,7 +23,7 @@ pip install -r requirements.txt
 
 ## 執行
 
-一條指令重建全部輸出：
+一條指令重建全部輸出（實測 **339 秒**）：
 
 ```bash
 python3 -m src.run_all
@@ -45,9 +45,11 @@ python3 -m src.run_all --only panel analysis report
 ```bash
 python3 -m src.market.collect_finmind --kinds price   # 267 檔日成交
 python3 -m src.market.collect_exrights                # 除權息參考價（全市場）
-python3 -m src.market.collect_shareholding            # 發行股數與外資持股
 python3 -m src.market.collect_reduction               # 減資恢復買賣參考價
+python3 -m src.market.collect_shareholding            # 發行股數與外資持股
 ```
+
+各來源的選用理由與被否決的選項見 [`docs/DATA_SOURCES.md`](docs/DATA_SOURCES.md)。
 
 三者皆支援斷點續傳；已抓取的檔案會自動跳過。三大法人資料使用既有的
 `data/twse/t86/` 封存，不需重抓。
@@ -127,7 +129,12 @@ tests/
 
 | 文件 | 用途 |
 |---|---|
-| [`FINDINGS.md`](FINDINGS.md) | 首輪結果摘要（全部為 diagnostic）與下一步建議 |
+| [`FINDINGS.md`](FINDINGS.md) | 結果摘要（全部為 diagnostic） |
 | [`LIMITATIONS.md`](LIMITATIONS.md) | **交付門檻**：研究限制與命名紀律 |
 | [`PROJECT.md`](PROJECT.md) | 研究設計與變數定義的單一真相來源 |
+| [`REPLICATION.md`](REPLICATION.md) | 複製套件：一條指令、環境、可重現性保證 |
+| [`docs/UNIVERSE_PROVENANCE.md`](docs/UNIVERSE_PROVENANCE.md) | 267 檔的來源、選樣規則、已確認缺口 |
+| [`docs/DATA_SOURCES.md`](docs/DATA_SOURCES.md) | 每項資料採用哪個來源、為何、被否決的選項 |
+| [`docs/TEJ_DATA_REQUEST.md`](docs/TEJ_DATA_REQUEST.md) | 授權資料需求與匯入契約 |
+| [`audit/adjudication/README.md`](audit/adjudication/README.md) | 歸屬正確率抽驗：六類誤配與修正 |
 | `PRD.md` | 產品需求文件（不進版控） |
