@@ -86,20 +86,36 @@ def build_trading_calendar(prices: pd.DataFrame, out_path: Path) -> pd.DataFrame
 
 
 def adjustment_factors(raw_root: Path,
-                       exrights_csv: Path | None = None) -> pd.DataFrame:
-    """由除權息前後參考價推導還原因子。
+                       exrights_csv: Path | None = None,
+                       reduction_csv: Path | None = None) -> pd.DataFrame:
+    """由除權息與減資的前後參考價推導還原因子。
 
-    factor = after_price / before_price（≤ 1）。除權息當日起，之前的價格須乘上
-    累積因子才能與之後可比。
+    factor = after_price / before_price。除權息 factor < 1；**減資 factor > 1**
+    （股本縮減使股價機械性跳升）。兩者都必須納入：只用除權息表還原時，主樣本內
+    仍有 127 筆 |日報酬| > 11% 的虛假極端值（台股漲跌幅上限 10%），涉及 59 檔。
 
-    主來源為 TWSE 除權除息計算結果表（全市場、含 2014–2025），FinMind 的逐檔
-    dividend 資料為備援。
+    來源：TWSE 除權除息計算結果表（TWT49U）＋ 股票減資恢復買賣參考價格（TWTAUU）。
     """
+    frames = []
     if exrights_csv is not None and exrights_csv.exists():
         df = pd.read_csv(exrights_csv, dtype={"ticker": str},
                          parse_dates=["date"])
-        df = df[(df["factor"] > 0.3) & (df["factor"] <= 1.0001)]
-        return df[["ticker", "date", "factor"]].sort_values(["ticker", "date"])
+        # 絕大多數 < 1；少數現金增資（認購價高於市價）會使參考價微幅上調，
+        # 上界放寬到 1.05 以免把這些合法事件當成錯誤丟掉。
+        df = df[(df["factor"] > 0.3) & (df["factor"] <= 1.05)]
+        frames.append(df[["ticker", "date", "factor"]].assign(kind="exright"))
+    if reduction_csv is not None and reduction_csv.exists():
+        rd = pd.read_csv(reduction_csv, dtype={"ticker": str},
+                         parse_dates=["date"])
+        # 減資因子理論上 > 1；過濾明顯異常者並在報告中揭露
+        rd = rd[(rd["factor"] > 1.0) & (rd["factor"] < 50)]
+        frames.append(rd[["ticker", "date", "factor"]].assign(kind="reduction"))
+    if frames:
+        out = pd.concat(frames, ignore_index=True)
+        # 同一天同時除權息與減資者，因子相乘
+        out = (out.groupby(["ticker", "date"], as_index=False)["factor"]
+               .prod().sort_values(["ticker", "date"]))
+        return out
 
     div_dir = raw_root / "dividend"
     if not div_dir.exists():
@@ -154,7 +170,8 @@ def apply_adjustment(prices: pd.DataFrame, factors: pd.DataFrame) -> pd.DataFram
 def build_daily_panel(raw_root: Path, out_dir: Path, audit_dir: Path,
                       t86_dir: Path | None = None,
                       exrights_csv: Path | None = None,
-                      shareholding_csv: Path | None = None) -> pd.DataFrame:
+                      shareholding_csv: Path | None = None,
+                      reduction_csv: Path | None = None) -> pd.DataFrame:
     prices = load_prices(raw_root)
     if t86_dir is not None and t86_dir.exists():
         # 既有 T86 封存涵蓋 2015-01 ~ 2024-12，正好覆蓋主樣本，且不受 API 額度限制。
@@ -164,7 +181,7 @@ def build_daily_panel(raw_root: Path, out_dir: Path, audit_dir: Path,
                         audit_dir=audit_dir)
     else:
         inst = load_institutional(raw_root)
-    factors = adjustment_factors(raw_root, exrights_csv)
+    factors = adjustment_factors(raw_root, exrights_csv, reduction_csv)
     prices = apply_adjustment(prices, factors)
 
     daily = prices.merge(inst, on=["ticker", "date"], how="left")

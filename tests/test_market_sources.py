@@ -108,3 +108,90 @@ class TestCrossSourceUnits:
             pytest.skip("無可比對值")
         ratio = t86.loc[ticker, "inst_buy"] / fm.loc[date, "inst_buy"]
         assert 0.999 < ratio < 1.001, f"單位比值 {ratio}（疑為股 vs. 仟股）"
+
+
+# ---------------------------------------------------------------------------
+# 股本變動還原（減資）——由 Yahoo 交叉比對揭露的錯誤，回歸測試鎖定
+# ---------------------------------------------------------------------------
+
+from src.market.normalize import apply_adjustment  # noqa: E402
+
+
+class TestCapitalReductionAdjustment:
+    """只用除權息表還原會漏掉減資，在減資日產生完全虛假的極端報酬。
+
+    長榮 2603 於 2022-09-19 減資，未還原時單日「上漲」109%——台股漲跌幅上限為
+    10%，這在定義上不可能是價格變動。
+    """
+
+    def _prices(self):
+        dates = pd.to_datetime(["2022-09-15", "2022-09-16", "2022-09-19",
+                                "2022-09-20"])
+        # 減資前後：股本減半使股價機械性跳升
+        return pd.DataFrame({
+            "ticker": "2603", "date": dates,
+            "open": [81.0, 80.5, 168.0, 170.0],
+            "close": [81.0, 80.8, 169.0, 172.5],
+        })
+
+    def test_without_reduction_factor_produces_impossible_return(self):
+        empty = pd.DataFrame(columns=["ticker", "date", "factor"])
+        out = apply_adjustment(self._prices(), empty)
+        ret = out["adj_close"].pct_change().iloc[2]
+        assert ret > 1.0, "未還原時應出現 >100% 的虛假報酬（此為守門情境）"
+
+    def test_reduction_factor_restores_plausible_return(self):
+        factors = pd.DataFrame({
+            "ticker": ["2603"], "date": [pd.Timestamp("2022-09-19")],
+            "factor": [2.09],   # 恢復買賣參考價 / 停止買賣前收盤價
+        })
+        out = apply_adjustment(self._prices(), factors)
+        ret = out["adj_close"].pct_change().iloc[2]
+        assert abs(ret) <= 0.10 + 1e-9, f"還原後應落在漲跌幅上限內，實得 {ret:.4f}"
+
+    def test_factor_direction_is_opposite_to_exrights(self):
+        """除權息因子 < 1（股價下調），減資因子 > 1（股價上調）。方向寫反會加倍錯誤。
+
+        少數現金增資（認購價高於市價）的除權參考價會微幅上調，因此檢定的是
+        「絕大多數 < 1 且無極端值」，而非全部 < 1。
+        """
+        ex_path = Path("data/interim/ex_rights.csv")
+        rd_path = Path("data/interim/capital_reductions.csv")
+        if not ex_path.exists() or not rd_path.exists():
+            pytest.skip("需要已收集的事件表")
+        ex = pd.read_csv(ex_path)
+        rd = pd.read_csv(rd_path)
+        assert (ex["factor"] < 1.0).mean() > 0.99, "除權息因子應絕大多數 < 1"
+        assert ex["factor"].max() < 1.05, "除權息因子不應出現大幅 > 1"
+        assert (rd["factor"] > 1.0).mean() > 0.9, "減資因子應絕大多數 > 1"
+
+    def test_pipeline_factors_merge_both_sources(self):
+        """管線實際使用的因子表必須同時含兩類事件。"""
+        from src.market.normalize import adjustment_factors
+        ex_path = Path("data/interim/ex_rights.csv")
+        rd_path = Path("data/interim/capital_reductions.csv")
+        if not ex_path.exists() or not rd_path.exists():
+            pytest.skip("需要已收集的事件表")
+        f = adjustment_factors(Path("data/raw/finmind"), ex_path, rd_path)
+        assert (f["factor"] < 1.0).any(), "缺除權息因子"
+        assert (f["factor"] > 1.0).any(), "缺減資因子"
+        assert not f.duplicated(["ticker", "date"]).any(), "同日事件應合併相乘"
+
+
+class TestAdjustedReturnsWithinPriceLimit:
+    """整體守門：面板中不應留下大量超過漲跌幅上限的日報酬。"""
+
+    def test_few_impossible_daily_returns_after_listing(self):
+        path = Path("data/interim/market_daily.parquet")
+        if not path.exists():
+            pytest.skip("需要已建置的日資料")
+        uni = pd.read_csv("data/external/universe.csv", dtype={"ticker": str})
+        listing = pd.to_datetime(uni.set_index("ticker")["listing_date"])
+        d = pd.read_parquet(path, columns=["ticker", "date", "adj_close"])
+        d = d.sort_values(["ticker", "date"])
+        d["r"] = d.groupby("ticker")["adj_close"].pct_change(fill_method=None)
+        d["listing"] = d["ticker"].map(listing)
+        # 只看 TWSE 上市之後（興櫃／上櫃期間無漲跌幅限制）
+        post = d[(d["date"] >= d["listing"]) & d["r"].notna()]
+        rate = float((post["r"].abs() > 0.11).mean())
+        assert rate < 0.0005, f"上市後超過漲跌幅上限的日報酬比例 {rate:.4%} 過高"

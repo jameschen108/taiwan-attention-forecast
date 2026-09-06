@@ -29,3 +29,4 @@ venv/
 
 # 執行記錄（工作產物，非交付項）
 /logs/
+/data/raw/yahoo/

@@ -46,6 +46,7 @@ python3 -m src.run_all --only panel analysis report
 python3 -m src.market.collect_finmind --kinds price   # 267 檔日成交
 python3 -m src.market.collect_exrights                # 除權息參考價（全市場）
 python3 -m src.market.collect_shareholding            # 發行股數與外資持股
+python3 -m src.market.collect_reduction               # 減資恢復買賣參考價
 ```
 
 三者皆支援斷點續傳；已抓取的檔案會自動跳過。三大法人資料使用既有的
@@ -72,7 +73,8 @@ python3 -m pytest tests/ -q
 | `data/interim/ptt_matches.parquet` | `ticker, timestamp, week, category, is_reply, match_mode, effort, window, session` | 同文多檔輸出多列 |
 | `data/interim/market_daily.parquet` | `ticker, date, venue, close, adj_close, volume, inst_buy, inst_sell` | 三個量皆為**股數** |
 | `data/interim/trading_days.csv` | 實際開市日清單、`is_makeup_saturday` | 由實際成交日推導 |
-| `data/interim/ex_rights.csv` | `ticker, date, before_price, after_price, factor` | TWSE 除權除息計算結果表 |
+| `data/interim/ex_rights.csv` | `ticker, date, before_price, after_price, factor` | TWSE 除權除息計算結果表；factor < 1 |
+| `data/interim/capital_reductions.csv` | 同上 ＋ `reason` | TWSE 減資恢復買賣參考價格；**factor > 1** |
 | `data/processed/panel.parquet` | ticker×week 非平衡面板 | **主結果用** |
 | `data/processed/panel_dense.parquet` | `dense` 子樣本 | H2 用 |
 
@@ -111,7 +113,8 @@ src/
   universe/ build.py（宇宙與市場別）, name_matching.py（碰撞消解）, screen.py（效度）
   ptt/      parse.py（分類與分層）, transform.py（歸屬與窗口）
   market/   collect_finmind.py, collect_twse.py（T86）, collect_exrights.py,
-            collect_shareholding.py, normalize.py（權值還原）
+            collect_reduction.py（減資）, collect_shareholding.py,
+            normalize.py（權值還原）, validate_prices.py（Yahoo 第三方驗證）
   features/ sessions.py（時段與週對齊）, attention.py（AbnAtt 與稀疏度）,
             imbalance.py（訂單失衡）, build.py（面板）
   analysis/ regressions.py, heterogeneity.py, events.py, sector.py,

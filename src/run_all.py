@@ -60,7 +60,23 @@ def stage_market() -> None:
         t86_dir=DATA / "twse" / "t86",
         exrights_csv=INTERIM / "ex_rights.csv",
         shareholding_csv=INTERIM / "shareholding.csv",
+        reduction_csv=INTERIM / "capital_reductions.csv",
     )
+    # 第三方驗證：以既有 Yahoo 快取獨立檢核權值還原（PRD §3.6、§8.1）
+    yahoo_root = DATA / "raw" / "yahoo"
+    if yahoo_root.exists():
+        from src.market.validate_prices import validate
+        uni = pd.read_csv(DATA / "external" / "universe.csv", dtype={"ticker": str})
+        listing = pd.to_datetime(uni.set_index("ticker")["listing_date"])
+        frames = [pd.read_csv(p, dtype={"ticker": str}, parse_dates=["date"])
+                  [["ticker", "date"]]
+                  for p in (INTERIM / "ex_rights.csv",
+                            INTERIM / "capital_reductions.csv") if p.exists()]
+        events = (pd.concat(frames, ignore_index=True) if frames
+                  else pd.DataFrame(columns=["ticker", "date"]))
+        daily = pd.read_parquet(INTERIM / "market_daily.parquet",
+                                columns=["ticker", "date", "close", "adj_close"])
+        validate(daily, yahoo_root, events, AUDIT, listing)
 
 
 def stage_ptt() -> None:
@@ -182,11 +198,14 @@ def stage_report() -> pd.DataFrame:
     sp = report.sparsity_distribution(panel)
     sp.to_csv(AUDIT / "sparsity_distribution.csv", index=False)
 
-    adj_path = AUDIT / "price_adjustment_report.csv"
+    # 權值還原是否「已驗證」由**第三方對照**決定，不是自我宣告（PRD §3.6）
+    val_path = AUDIT / "price_validation_yahoo.csv"
     verified = False
-    if adj_path.exists():
-        adj = pd.read_csv(adj_path)
-        verified = bool(adj["adjustment_verified"].all())
+    if val_path.exists():
+        val = pd.read_csv(val_path)
+        checked = val[val["status"].isin(["PASS", "FAIL"])]
+        if len(checked):
+            verified = bool((checked["status"] == "PASS").mean() >= 0.95)
 
     readiness = report.analysis_readiness(panel, verified)
     readiness.to_csv(PROCESSED / "analysis_readiness.csv", index=False)

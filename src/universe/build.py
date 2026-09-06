@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import csv
 import json
+import time
 import urllib.request
 from pathlib import Path
 
@@ -75,9 +76,32 @@ EXTRA_VARIANTS: dict[str, list[str]] = {
 }
 
 
-def _get_json(url: str) -> list[dict]:
-    raw = urllib.request.urlopen(url, timeout=90).read()
-    return json.loads(raw.decode("utf-8-sig"))
+def _get_json(url: str, cache: Path | None = None,
+              max_retries: int = 4) -> list[dict]:
+    """抓取並落地快取（PRD §4.3 第 2 點）。
+
+    快取存在時直接讀取——重建不應依賴網路，也讓結果可離線重現。上游偶發的
+    IncompleteRead 會重試。
+    """
+    if cache is not None and cache.exists():
+        return json.loads(cache.read_text(encoding="utf-8"))
+
+    last_exc: Exception | None = None
+    for attempt in range(max_retries):
+        try:
+            raw = urllib.request.urlopen(url, timeout=120).read()
+            data = json.loads(raw.decode("utf-8-sig"))
+        except Exception as exc:  # noqa: BLE001 — 含 IncompleteRead、URLError
+            last_exc = exc
+            if attempt < max_retries - 1:
+                print(f"    抓取失敗（{type(exc).__name__}），{5 * (attempt + 1)}s 後重試")
+                time.sleep(5 * (attempt + 1))
+            continue
+        if cache is not None:
+            cache.parent.mkdir(parents=True, exist_ok=True)
+            cache.write_text(json.dumps(data, ensure_ascii=False), encoding="utf-8")
+        return data
+    raise RuntimeError(f"無法取得 {url}：{last_exc}")
 
 
 def _roc_to_iso(value: str) -> str:
@@ -94,8 +118,11 @@ def build(universe_csv: Path, out_data: Path, out_config: Path, out_audit: Path)
     rows = list(csv.DictReader(open(universe_csv, encoding="utf-8-sig")))
     assert len(rows) == 267, f"宇宙應為 267 檔，實得 {len(rows)}"
 
-    twse = {r["公司代號"]: r for r in _get_json(TWSE_BASICS)}
-    tpex = {r["SecuritiesCompanyCode"]: r for r in _get_json(TPEX_BASICS)}
+    cache_dir = Path("data/raw/company_basics")
+    twse = {r["公司代號"]: r
+            for r in _get_json(TWSE_BASICS, cache_dir / "twse_t187ap03_L.json")}
+    tpex = {r["SecuritiesCompanyCode"]: r
+            for r in _get_json(TPEX_BASICS, cache_dir / "tpex_t187ap03_O.json")}
 
     out_data.mkdir(parents=True, exist_ok=True)
     out_config.mkdir(parents=True, exist_ok=True)
