@@ -194,6 +194,38 @@ def f5_portfolio_cumulative(weekly: pd.DataFrame, summary: pd.DataFrame,
     plt.close(fig)
 
 
+def f6_matched_car(tables_dir: Path, out: Path, tag: str = "all") -> None:
+    """未匹配 vs 匹配後的 CAR 路徑對照——H7 反向因果處理的成果。"""
+    un_p = tables_dir / f"T7M_unmatched_{tag}.csv"
+    ma_p = tables_dir / f"T7M_matched_{tag}.csv"
+    if not (un_p.exists() and ma_p.exists()):
+        return
+    un, ma = pd.read_csv(un_p), pd.read_csv(ma_p)
+
+    fig, axes = plt.subplots(1, 2, figsize=(12, 4.6), sharey=True)
+    for ax, d, title in (
+        (axes[0], un, "未匹配（原始事件研究）"),
+        (axes[1], ma, "同週匹配對照 ＋ 事前報酬 caliper"),
+    ):
+        ax.plot(d["tau"], d["car_diff"], "o-", lw=1.4, color="tab:blue")
+        if "se" in d.columns:
+            lo = d["car_diff"] - 1.96 * d["se"].fillna(0)
+            hi = d["car_diff"] + 1.96 * d["se"].fillna(0)
+            ax.fill_between(d["tau"], lo, hi, alpha=0.15, color="tab:blue")
+        ax.axvline(0, color="crimson", lw=1, ls=":")
+        ax.axhline(0, color="0.4", lw=0.8, ls="--")
+        ax.axvspan(-4.4, -0.6, color="0.92", zorder=0)
+        ax.set_title(title, fontsize=10)
+        ax.set_xlabel("相對事件週 τ")
+    axes[0].set_ylabel("累積異常報酬（處理組 − 對照組）")
+    axes[0].text(-2.5, axes[0].get_ylim()[1] * 0.9, "平行趨勢檢查區",
+                 ha="center", fontsize=8, color="0.35")
+    fig.suptitle("F6 關注度起始事件：反向因果處理前後（diagnostic）", fontsize=11)
+    fig.tight_layout()
+    fig.savefig(out, bbox_inches="tight")
+    plt.close(fig)
+
+
 def run(panel: pd.DataFrame, tables_dir: Path, out_dir: Path) -> list[str]:
     out_dir.mkdir(parents=True, exist_ok=True)
     made = []
@@ -210,6 +242,10 @@ def run(panel: pd.DataFrame, tables_dir: Path, out_dir: Path) -> list[str]:
     if car_path.exists():
         f4_car_path(pd.read_csv(car_path), out_dir / "F4_car_path.png")
         made.append("F4_car_path.png")
+
+    if (tables_dir / "T7M_matched_all.csv").exists():
+        f6_matched_car(tables_dir, out_dir / "F6_matched_car.png")
+        made.append("F6_matched_car.png")
 
     wk, sm = tables_dir / "T9_portfolio_weekly.csv", tables_dir / "T9_portfolios.csv"
     if wk.exists() and sm.exists():

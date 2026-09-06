@@ -101,8 +101,8 @@ def stage_screen() -> None:
 
 def stage_analysis() -> dict:
     from src.analysis import (
-        events, heterogeneity, makeup_days, portfolios, regressions,
-        robustness, sector,
+        events, heterogeneity, makeup_days, matched_events, portfolios,
+        regressions, robustness, sector,
     )
     settings = _settings()
     TABLES.mkdir(parents=True, exist_ok=True)
@@ -151,6 +151,23 @@ def stage_analysis() -> dict:
     if not car.empty:
         print(f"  CAR 路徑：{car.attrs.get('n_events_total', 0)} 個事件，"
               f"平行趨勢 {'通過' if car.attrs.get('parallel_trend_ok') else '未通過'}")
+
+    print("[T7M] 起始事件・匹配對照（反向因果）")
+    for col, tag in (("is_initiation", "all"),
+                     ("is_initiation_weekend", "weekend")):
+        res = matched_events.run(panel, col)
+        if res.matched.empty:
+            print(f"  [{tag}] {res.verdict}")
+            continue
+        res.unmatched.to_csv(TABLES / f"T7M_unmatched_{tag}.csv", index=False)
+        res.matched.to_csv(TABLES / f"T7M_matched_{tag}.csv", index=False)
+        res.balance.to_csv(TABLES / f"T7M_balance_{tag}.csv", index=False)
+        res.clean.to_csv(TABLES / f"T7M_clean_{tag}.csv", index=False)
+        if not res.propensity.empty:
+            res.propensity.to_csv(TABLES / f"T7M_propensity_{tag}.csv", index=False)
+        counts[f"T7M_{tag}"] = 1
+        print(f"  [{tag}] 事件 {int(res.matched['n_events'].max())}、"
+              f"週群集 {int(res.matched['n_week_clusters'].max())}；{res.verdict}")
 
     print("[T8] 產業")
     dump(sector.spillover_models(main), "T8_sector_spillover")
