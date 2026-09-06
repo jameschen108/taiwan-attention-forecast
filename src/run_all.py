@@ -203,7 +203,14 @@ def stage_analysis() -> dict:
 
 
 def stage_report() -> pd.DataFrame:
+    from src import audit_integrity
     from src.analysis import regressions, report
+
+    # checksum 需讀取 1.4 GB，改由 `python3 -m src.audit_integrity` 單獨執行；
+    # 已產出的 checksum 報告會被 health_checks 讀入。
+    audit_integrity.title_parsing_accuracy(DATA / "pttweb", AUDIT)
+    audit_integrity.lead_lag_verification(
+        PROCESSED / "panel.parquet", AUDIT)
     TABLES.mkdir(parents=True, exist_ok=True)
     panel = regressions.add_derived(pd.read_parquet(PROCESSED / "panel.parquet"))
     uni = pd.read_csv(DATA / "external" / "universe.csv", dtype={"ticker": str})

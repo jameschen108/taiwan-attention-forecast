@@ -71,6 +71,9 @@ PROJECT.md LIMITATIONS.md FINDINGS.md README.md
 |---|---|
 | 一條指令可從 raw 重建全部輸出 | ✅ 339 秒 |
 | 測試套件全綠 | ✅ 101 passed, 1 skipped |
+| PTT 封存 checksum | ✅ 251,858 檔、0.99 GB、總指紋 `e156143357e09783…` |
+| 標題解析正確率 > 95% | ✅ 100%（兩套獨立實作的一致率，非人工判讀） |
+| 次週報酬嚴格領先 | ✅ 5/5 項；同期相關 0.0705 vs 次週 −0.0030 |
 | `formal_main_return` 為 True | ❌ 授權資料未取得（見 `docs/TEJ_DATA_REQUEST.md`） |
 | `LIMITATIONS.md` 與結果同步 | ✅ |
 
@@ -83,3 +86,12 @@ PROJECT.md LIMITATIONS.md FINDINGS.md README.md
 （有效 260 檔），不得寫成「台股」。
 
 `LIMITATIONS.md` §11 有完整的命名紀律對照表。
+
+## 封存指紋
+
+```
+audit/ptt_archive_checksums.csv    逐批次 SHA-256 ＋ 總指紋
+```
+
+重跑 `python3 -m src.audit_integrity` 可驗證封存未被改動。
+指紋與檔案順序無關、與內容完全綁定。

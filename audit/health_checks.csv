@@ -16,3 +16,6 @@ dense 檔數（眾數分層，參考）,無門檻，供描述用,11,True,§8.2
 正式主表可產出,formal_controls_available 為 True,False,False,§8.4
 權值還原已驗證,price_adjustment_verified 為 True,True,True,§8.1
 上市前為缺列,上市前的週不得出現在面板,0,True,§8.1
+PTT 封存 checksum,全期間封存已計算 SHA-256,"251,858 檔 / e156143357e0…",True,§8.1
+標題解析正確率,> 95%（含 Re:／Fw: 回文）,100.00%,True,§8.1
+次週報酬嚴格領先,五項領先／對齊檢查全數通過,5/5,True,§8.1

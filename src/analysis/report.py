@@ -176,4 +176,27 @@ def health_checks(panel: pd.DataFrame, universe: pd.DataFrame,
     add("上市前為缺列", "上市前的週不得出現在面板", pre_listing,
         pre_listing == 0, "§8.1")
 
+    # --- 由 src/audit_integrity.py 產出的三項證據 ---
+    from pathlib import Path as _P
+    cs = _P("audit/ptt_archive_checksums.csv")
+    if cs.exists():
+        c = pd.read_csv(cs)
+        tot = c[c["batch"] == "__ARCHIVE_TOTAL__"]
+        add("PTT 封存 checksum", "全期間封存已計算 SHA-256",
+            f"{int(tot['n_files'].iloc[0]):,} 檔 / {tot['sha256'].iloc[0][:12]}…",
+            len(tot) == 1, "§8.1")
+
+    tp = _P("audit/ptt_title_parsing_accuracy.csv")
+    if tp.exists():
+        t = pd.read_csv(tp).iloc[0]
+        add("標題解析正確率", "> 95%（含 Re:／Fw: 回文）",
+            f"{t['agreement_rate']:.2%}", bool(t["passed"]), "§8.1")
+
+    ll = _P("audit/lead_lag_verification.csv")
+    if ll.exists():
+        l = pd.read_csv(ll)
+        add("次週報酬嚴格領先", "五項領先／對齊檢查全數通過",
+            f"{int(l['passed'].sum())}/{len(l)}",
+            bool(l["passed"].all()), "§8.1")
+
     return pd.DataFrame(rows)

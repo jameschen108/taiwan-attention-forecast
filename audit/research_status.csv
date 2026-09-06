@@ -8,4 +8,4 @@ MVP,DONE,主迴歸方向確認
 P5 分析（核心）,DONE,機制、異質性、起始事件（含反向因果匹配）、反轉皆完成
 P6 分析（延伸）,DONE,效果分層、產業、投資組合、補班日完成
 P7 外部控制,BLOCKED,授權資料未取得，缺：news_count;selling_expense_to_sales;analyst_count;forecast_dispersion;forecast_revision
-P8 穩健性與交付,PARTIAL,穩健性 17/23 可執行項完成；驗收門檻 15/17 通過
+P8 穩健性與交付,PARTIAL,穩健性 17/23 可執行項完成；驗收門檻 18/20 通過

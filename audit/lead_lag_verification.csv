@@ -1,0 +1,6 @@
+check,requirement,observed,passed
+ret_next 僅取連續下一週,休市／缺列週不得跳過去取更後面的報酬,違反 0 列,True
+週標籤為星期日（W-SUN）,所有 week 的 weekday == 6,True,True
+報酬週嚴格晚於特徵週,報酬週週一 = 特徵週週日 + 1 天,由 W-SUN 錨定保證，見 tests/test_core_logic.py::test_weekend_attention_strictly_leads_return_week,True
+同期共動 > 領先相關,"corr(att, ret) 明顯大於 corr(att, ret_next)——若相反代表領先項可能誤取同期",同期 0.0705 vs 次週 -0.0030,True
+完全休市週保留為無報酬觀測,week_n_trading_days == 0 的列存在且 ret 全為缺值,1224 列，ret 缺值 1224 列,True
