@@ -18,7 +18,7 @@ python3 -m src.run_all
 
 ```bash
 pip install -r requirements.txt   # python >= 3.10
-python3 -m pytest tests/ -q       # 101 passed, 1 skipped
+python3 -m pytest tests/ -q       # 113 passed, 1 skipped
 ```
 
 ## 需要另行取得的輸入
@@ -42,10 +42,10 @@ python3 -m pytest tests/ -q       # 101 passed, 1 skipped
 ```
 config/          universe.yaml（含名稱變體、碰撞群組、降級與阻擋規則）、settings.yaml
 src/             全部管線與分析程式
-tests/           101 項回歸測試
+tests/           113 項回歸測試
 scripts/         R15 敏感度測試
 audit/           全部稽核與品質報告（不含原始資料）
-output/tables/   論文表格 T1–T12、R15、T7M
+output/tables/   論文表格 T1–T13、R15、T7M
 output/figures/  論文圖 F1–F6
 data/external/   universe.csv、market_venue.csv
 docs/            UNIVERSE_PROVENANCE、DATA_SOURCES、TEJ_DATA_REQUEST
@@ -70,7 +70,7 @@ PROJECT.md LIMITATIONS.md FINDINGS.md README.md
 | 項目 | 狀態 |
 |---|---|
 | 一條指令可從 raw 重建全部輸出 | ✅ 339 秒 |
-| 測試套件全綠 | ✅ 101 passed, 1 skipped |
+| 測試套件全綠 | ✅ 113 passed, 1 skipped |
 | PTT 封存 checksum | ✅ 251,858 檔、0.99 GB、總指紋 `e156143357e09783…` |
 | 標題解析正確率 > 95% | ✅ 100%（兩套獨立實作的一致率，非人工判讀） |
 | 次週報酬嚴格領先 | ✅ 5/5 項；同期相關 0.0705 vs 次週 −0.0030 |

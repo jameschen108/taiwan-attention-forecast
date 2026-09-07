@@ -20,10 +20,10 @@
 | 項目 | 狀態 |
 |---|---|
 | 管線 | 8 階段，一條指令從 raw 重建全部輸出，**實測 339 秒** |
-| 測試 | **101 passed**, 1 skipped |
+| 測試 | **113 passed**, 1 skipped |
 | 面板 | 123,828 列 × **260 檔** × 506 週（2015-05-03 ~ 2025-01-05） |
 | 驗收門檻 | **18/20 通過**（未通過兩項同一根因：授權資料未取得） |
-| 產出 | 表格 T1–T12 ＋ R15 ＋ T7M、圖 F1–F6、17 份稽核報告 |
+| 產出 | 表格 T1–T13 ＋ R15 ＋ T7M、圖 F1–F6、17 份稽核報告 |
 
 未通過的兩項：
 
@@ -60,7 +60,7 @@
 ```bash
 pip install -r requirements.txt        # python >= 3.10
 python3 -m src.run_all                 # 從 raw 重建全部輸出（339 秒）
-python3 -m pytest tests/ -q            # 101 passed
+python3 -m pytest tests/ -q            # 113 passed
 ```
 
 各階段可獨立重跑（除錯用）：
@@ -320,10 +320,11 @@ src/
             imbalance.py（訂單失衡）, build.py（面板）
   analysis/ regressions.py, heterogeneity.py, events.py, matched_events.py,
             sector.py, portfolios.py, makeup_days.py, robustness.py,
-            report.py, coverage_reports.py, figures.py
+            paper_comparison.py（T13）, report.py, coverage_reports.py,
+            figures.py
   run_all.py, audit_data.py, audit_integrity.py
 scripts/    sensitivity_bulk_listing.py（R15）
-tests/      101 項回歸測試
+tests/      113 項回歸測試
 ```
 
 ---
