@@ -59,7 +59,26 @@ validation:
 
 models:
   ridge_alpha: [0.1, 1, 10, 100]
+  logistic_c: [0.01, 0.1, 1, 10]
   seed: 42
+  hgb:
+    learning_rate: 0.05
+    max_iter: 200
+    max_leaf_nodes: 15
+    min_samples_leaf: 100
+    l2_regularization: 10
+
+backtest:
+  enabled_horizons: [1w]
+  initial_cash_twd: 1000000
+  top_k: 20
+  max_weight_per_name: 0.05
+  min_adv20_twd: 5000000
+  max_order_fraction_adv20: 0.01
+  cost_schedule: config/trading_costs.csv
+  slippage_stress_multiplier: 2
+  max_drawdown_limit: 0.35
+  execution_evidence: daily_bar_proxy
 
 paths:
   source_assumptions: docs/forecast/source_availability_assumptions.md

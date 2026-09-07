@@ -50,13 +50,19 @@ def filter_mature(df: pd.DataFrame, fit_cutoff: pd.Timestamp) -> pd.DataFrame:
     return out
 
 
-def filter_mature_fast(df: pd.DataFrame, fit_cutoff: pd.Timestamp) -> pd.DataFrame:
+def filter_mature_fast(
+    df: pd.DataFrame,
+    fit_cutoff: pd.Timestamp,
+    y_col: str = "y_excess_1w",
+) -> pd.DataFrame:
     fit_cutoff = pd.Timestamp(fit_cutoff)
+    if y_col not in df.columns:
+        raise KeyError(f"missing label column {y_col}")
     out = df[
         (df["label_end_at"] < fit_cutoff)
         & (df["label_available_at"] < fit_cutoff)
         & (df["label_status"] == "ok")
-        & (df["y_excess_1w"].notna())
+        & (df[y_col].notna())
         & (df["as_of"] < fit_cutoff)
     ].copy()
     return out

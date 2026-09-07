@@ -23,8 +23,7 @@ def build_forecast_tables(cfg: dict[str, Any] | None = None) -> dict[str, pd.Dat
     cfg = cfg or load_forecast_config()
     root = Path(cfg["_root"])
     panel_path = resolve_path(cfg, "panel_path")
-    daily_path = resolve_path(cfg, "daily_path")  # reserved for future PIT daily feats
-    _ = daily_path
+    daily_path = resolve_path(cfg, "daily_path")
     trading_days_path = resolve_path(cfg, "trading_days_path")
     bench_price = resolve_path(cfg, "benchmark_price_path")
     out_dir = resolve_path(cfg, "output_dir")
@@ -34,9 +33,13 @@ def build_forecast_tables(cfg: dict[str, Any] | None = None) -> dict[str, pd.Dat
     panel["ticker"] = panel["ticker"].astype(str)
     panel["week"] = pd.to_datetime(panel["week"])
 
+    stock_daily = pd.read_parquet(daily_path)
+    stock_daily["date"] = pd.to_datetime(stock_daily["date"])
+    stock_daily["ticker"] = stock_daily["ticker"].astype(str)
+
     trading_days = _load_trading_days(trading_days_path)
     exrights = root / "data" / "interim" / "ex_rights.csv"
-    bench_weekly = load_or_build_benchmark_weekly(
+    bench_weekly, bench_daily = load_or_build_benchmark_weekly(
         bench_price, exrights, out_dir / "benchmark_weekly.parquet",
     )
 
@@ -69,8 +72,13 @@ def build_forecast_tables(cfg: dict[str, Any] | None = None) -> dict[str, pd.Dat
         panel,
         trading_days,
         bench_weekly,
+        stock_daily=stock_daily,
+        bench_daily=bench_daily,
         label_definition=cfg["forecast"].get("label_definition", "adjusted_price_proxy"),
     )
+
+    n_1w = int((labels["horizon"] == "1w").sum()) if "horizon" in labels.columns else len(labels)
+    n_4w = int((labels["horizon"] == "4w").sum()) if "horizon" in labels.columns else 0
 
     features.to_parquet(out_dir / "features.parquet", index=False)
     labels.to_parquet(out_dir / "labels.parquet", index=False)
@@ -80,6 +88,8 @@ def build_forecast_tables(cfg: dict[str, Any] | None = None) -> dict[str, pd.Dat
         {
             "n_feature_rows": len(features),
             "n_label_rows": len(labels),
+            "n_label_1w": n_1w,
+            "n_label_4w": n_4w,
             "n_tickers": features["ticker"].nunique(),
             "n_as_of": features["as_of"].nunique(),
             "n_labels_ok": int((labels["label_status"] == "ok").sum()),
@@ -96,22 +106,37 @@ def build_forecast_tables(cfg: dict[str, Any] | None = None) -> dict[str, pd.Dat
     ])
     excl.to_csv(out_dir / "sample_exclusion_report.csv", index=False)
 
-    return {"features": features, "labels": labels, "benchmark_weekly": bench_weekly}
+    return {
+        "features": features,
+        "labels": labels,
+        "benchmark_weekly": bench_weekly,
+        "stock_daily": stock_daily,
+        "bench_daily": bench_daily,
+    }
 
 
 def join_xy(
     features: pd.DataFrame,
     labels: pd.DataFrame,
     feature_set: str = "A",
+    horizon: str = "1w",
 ) -> pd.DataFrame:
-    """Join features with mature-capable labels; does not drop latest unlabeled rows from features."""
+    """Join features with labels for a given horizon."""
     a_cols, b_cols, _ = feature_lists()
     cols = a_cols if feature_set.upper() == "A" else b_cols
     keys = ["ticker", "week", "as_of"]
-    lab = labels[[
-        "ticker", "week", "as_of", "y_excess_1w", "y_outperform_1w",
-        "label_end_at", "label_available_at", "label_status",
-    ]]
+    hz = horizon.lower()
+    y_excess = f"y_excess_{hz}"
+    y_out = f"y_outperform_{hz}"
+    lab_cols = ["ticker", "week", "as_of", "label_end_at", "label_available_at", "label_status"]
+    for c in (y_excess, y_out):
+        if c in labels.columns:
+            lab_cols.append(c)
+    lab = labels[labels["horizon"] == hz][lab_cols].drop_duplicates(keys)
     out = features[keys + ["sparsity_tier"] + cols].merge(lab, on=keys, how="left")
     out["feature_set"] = feature_set.upper()
+    out["horizon"] = hz
+    if hz == "1w" and y_excess in out.columns:
+        out["y_excess_1w"] = out[y_excess]
+        out["y_outperform_1w"] = out[y_out]
     return out

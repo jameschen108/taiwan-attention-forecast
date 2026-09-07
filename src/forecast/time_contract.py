@@ -51,10 +51,26 @@ def label_end_1w(
     trading_days_sorted: list[dt.date],
 ) -> pd.Timestamp | pd.NaT:
     """Last market session in the next calendar week."""
+    return _label_end_calendar_week(feature_week, trading_days_sorted, week_offset=1)
+
+
+def label_end_4w(
+    feature_week: pd.Timestamp,
+    trading_days_sorted: list[dt.date],
+) -> pd.Timestamp | pd.NaT:
+    """Last market session in the 4th calendar week after feature week (w+4)."""
+    return _label_end_calendar_week(feature_week, trading_days_sorted, week_offset=4)
+
+
+def _label_end_calendar_week(
+    feature_week: pd.Timestamp,
+    trading_days_sorted: list[dt.date],
+    week_offset: int,
+) -> pd.Timestamp | pd.NaT:
     import bisect
 
     monday = (pd.Timestamp(feature_week) + pd.Timedelta(days=1)).date()
-    sunday = (pd.Timestamp(feature_week) + pd.Timedelta(days=7)).date()
+    sunday = (pd.Timestamp(feature_week) + pd.Timedelta(days=7 * week_offset)).date()
     idx = bisect.bisect_right(trading_days_sorted, sunday) - 1
     if idx < 0:
         return pd.NaT

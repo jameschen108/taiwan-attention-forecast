@@ -12,7 +12,8 @@
 ```bash
 pip install -r requirements.txt
 python3 -m src.forecast.run          # 建 features/labels + 2020–2024 Ridge A/B
-python3 -m pytest tests/test_forecast_p0.py -q
+python3 -m src.forecast.run_p2        # P2：機率、4w HGB、交易回測（需先跑 P1）
+python3 -m pytest tests/test_forecast_p0.py tests/test_forecast_p2.py -q
 ```
 
 產出：

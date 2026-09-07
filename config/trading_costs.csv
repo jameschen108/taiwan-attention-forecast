@@ -1,0 +1,2 @@
+effective_from,fee_rate,fee_discount,tax_rate_sell,slippage_bps,min_fee_twd,lot_size
+2010-01-01,0.001425,0.6,0.003,20,20,1000
