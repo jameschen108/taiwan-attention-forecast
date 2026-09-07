@@ -58,13 +58,23 @@ def week_of(date: dt.date | pd.Timestamp) -> pd.Timestamp:
 
 
 def attention_week(ts: pd.Timestamp, trading_days_sorted: list[dt.date]) -> pd.Timestamp | None:
-    """關注度所屬的「特徵週」。
+    """關注度所屬的「特徵週」（研究管線）。
 
     以貼文時間所在的 W-SUN 週為準：週六／日的貼文落在以該週日結尾的週，其報酬期為
     下一個日曆週的週一至週五，因此嚴格領先。
+
+    研究管線仍要求存在下一交易日；預測管線請用 `attention_week_calendar`。
     """
     if next_trading_day(ts, trading_days_sorted) is None:
         return None
+    return week_of(ts)
+
+
+def attention_week_calendar(ts: pd.Timestamp) -> pd.Timestamp:
+    """預測管線：僅依日曆歸週，不依賴未來成交日是否已存在。
+
+    週末貼文在尚無下週行情時仍可進入特徵週，供最新無標籤推論使用。
+    """
     return week_of(ts)
 
 

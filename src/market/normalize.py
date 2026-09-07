@@ -171,7 +171,8 @@ def build_daily_panel(raw_root: Path, out_dir: Path, audit_dir: Path,
                       t86_dir: Path | None = None,
                       exrights_csv: Path | None = None,
                       shareholding_csv: Path | None = None,
-                      reduction_csv: Path | None = None) -> pd.DataFrame:
+                      reduction_csv: Path | None = None,
+                      permit_backward_fill: bool = True) -> pd.DataFrame:
     prices = load_prices(raw_root)
     if t86_dir is not None and t86_dir.exists():
         # 既有 T86 封存涵蓋 2015-01 ~ 2024-12，正好覆蓋主樣本，且不受 API 額度限制。
@@ -207,10 +208,12 @@ def build_daily_panel(raw_root: Path, out_dir: Path, audit_dir: Path,
 
     if sh is not None and not sh.empty:
         daily = daily.merge(sh, on=["ticker", "date"], how="left")
-        # 抽樣頻率低於日頻，以前向填補；期初的空白由後向填補一次
+        # 抽樣頻率低於日頻：一律 ffill。bfill 會把首次公開值推回更早日期，
+        # 預測管線必須關閉（permit_backward_fill=False）。
         for col in ("foreign_holding_pct", "shares_outstanding"):
             daily[col] = daily.groupby("ticker")[col].ffill()
-            daily[col] = daily.groupby("ticker")[col].bfill()
+            if permit_backward_fill:
+                daily[col] = daily.groupby("ticker")[col].bfill()
     else:
         daily["foreign_holding_pct"] = np.nan
         daily["shares_outstanding"] = np.nan

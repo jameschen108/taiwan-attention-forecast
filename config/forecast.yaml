@@ -1,0 +1,67 @@
+forecast:
+  version: attention_forecast_v1
+  timezone: Asia/Taipei
+  cutoff:
+    weekday: monday
+    time: "00:00"
+    exclusive: true
+  generation_deadline: "08:00"
+  frequency: weekly
+  primary_horizon: 1w
+  secondary_horizons: [4w]
+  horizon_basis: calendar_weeks
+  benchmark: "0050"
+  target: total_return_excess
+  primary_comparison: ridge_price_ptt_vs_ridge_price
+  label_definition: adjusted_price_proxy
+
+universe:
+  development_mode: existing_ex_post_universe
+  require_snapshot: true
+  allow_historical_tradability_claim: false
+
+data:
+  availability_mode: retrospective_proxy
+  require_explicit_source_assumptions: true
+  ptt_incomplete_action: use_validated_price_model_or_skip
+  price_incomplete_action: skip_affected_predictions
+  permit_backward_fill: false
+  panel_path: data/processed/panel.parquet
+  daily_path: data/interim/market_daily.parquet
+  trading_days_path: data/interim/trading_days.csv
+  benchmark_price_path: data/raw/finmind/price/0050.json
+  output_dir: data/forecast
+  report_dir: output/forecast
+
+features:
+  attention_lookback_weeks: 8
+  sparsity_lookback_weeks: 52
+  bulk_listing_max_tickers: 15
+  history_shortfall: flag_missing
+  whitelist_version: forecast_v1
+  # 主迴歸限定 dense+sparse；silent 仍可出現在推論名單但訓練預設排除
+  train_sparsity_tiers: [dense, sparse]
+
+validation:
+  split_unit: as_of_week
+  outer_test_years: [2020, 2021, 2022, 2023, 2024]
+  inner_validation_blocks: 3
+  inner_validation_weeks: 26
+  minimum_inner_training_weeks: 104
+  refit_every_prediction_weeks: 4
+  hyperparameter_refresh: annual
+  require_label_available_before_fit: true
+  min_names_per_ic_week: 30
+  bootstrap_block_weeks: 8
+  bootstrap_sensitivity_block_weeks: [4, 13]
+  bootstrap_repetitions: 200  # P1 先用較小重抽加速；正式報告可升至 2000
+  seed: 42
+
+models:
+  ridge_alpha: [0.1, 1, 10, 100]
+  seed: 42
+
+paths:
+  source_assumptions: docs/forecast/source_availability_assumptions.md
+  data_dictionary: docs/forecast/data_dictionary.md
+  feature_whitelist: config/forecast_feature_whitelist.yaml

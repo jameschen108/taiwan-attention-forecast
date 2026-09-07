@@ -1,0 +1,66 @@
+# A：價格／結構特徵（截止時可知）
+A:
+  - ret
+  - ret_lag1
+  - mom_4w
+  - mom_12w
+  - mom_26w
+  - vol_20d
+  - vol_60d
+  - log_adv20
+  - rel_volume_1w
+  - amihud_20d
+  - zero_volume_share_20d
+  - mean_turnover_20d
+  - log_market_cap
+  - listing_age_years
+  - foreign_holding_pct
+  - bench_ret_1w
+  - bench_vol_20d
+  - missing_market_cap
+  - missing_foreign_holding
+  - missing_amihud
+  - history_weeks_available
+
+# B：A + PTT 關注度
+B_extra:
+  - log1p_att_all
+  - log1p_att_weekday
+  - log1p_att_weekend
+  - abn_attention_all
+  - abn_attention_weekday
+  - abn_attention_weekend
+  - att_count_delta_1w
+  - att_count_trend_4w
+  - att_nonzero_weeks_52
+  - att_mean_level_52
+  - history_weeks_available
+  - insufficient_history
+  - is_initiation
+  - att_zero_base
+  - log1p_att_high_effort
+  - log1p_att_mid_effort
+  - log1p_att_low_effort
+  - weekend_share
+  - non_trading_share
+  - is_code_only_matched
+  - missing_attention_window
+
+# 絕對禁止進入 X（標籤／未來欄）
+forbidden:
+  - ret_next
+  - non_inst_roi_next
+  - turnover_next
+  - ret_fwd2
+  - ret_fwd3
+  - ret_fwd4
+  - ret_fwd5
+  - ret_fwd6
+  - ret_fwd7
+  - ret_fwd8
+  - y_excess_1w
+  - y_excess_4w
+  - y_outperform_1w
+  - y_stock_1w
+  - y_bench_1w
+  - label_status

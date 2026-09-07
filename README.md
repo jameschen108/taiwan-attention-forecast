@@ -1,4 +1,38 @@
-# 台股長尾關注度與報酬可預測性
+# taiwan-attention-forecast
+
+由 [`taiwan-attention-long-tail`](https://github.com/jameschen108/taiwan-attention-long-tail)
+延伸而來的**預測管線**專案：保留既有研究資產，另建可時間外推的未來相對強弱預測。
+
+- 改造規格：[`docs/FORECAST_SPEC.md`](docs/FORECAST_SPEC.md)
+- 研究版本機路徑：`/Users/jameschen/GItHub/taiwan-attention-long-tail`
+- 目前尚無獨立 `origin`；研究遠端僅作參考，請勿推送回研究版
+
+## 預測管線（P0 / P1）
+
+```bash
+pip install -r requirements.txt
+python3 -m src.forecast.run          # 建 features/labels + 2020–2024 Ridge A/B
+python3 -m pytest tests/test_forecast_p0.py -q
+```
+
+產出：
+
+| 路徑 | 內容 |
+|---|---|
+| `data/forecast/features.parquet` | 時點特徵（無未來標籤欄） |
+| `data/forecast/labels.parquet` | 1w 超額報酬 vs 0050 |
+| `data/forecast/predictions.parquet` | 可追溯樣本外預測 |
+| `output/forecast/VERDICT.md` | A/B 主比較結論 |
+| `output/forecast/evaluation_weekly.csv` | 逐週 Rank IC / ΔIC |
+
+P1 預先登記成功條件見規格 §17.2：B 相對 A 的 ΔIC 需穩定為正。  
+目前開發評估結果寫在 `output/forecast/VERDICT.md`（實驗完成 ≠ 宣稱可獲利）。
+
+下方文件仍描述**研究繼承狀態**。預測實作以 `FORECAST_SPEC` 為準，並與研究管線分離。
+
+---
+
+# 台股長尾關注度與報酬可預測性（研究繼承）
 
 把 Li, Liu, Ye, Zhao & Zhao, *"It Depends on When You Search"*（MIS Quarterly）的
 「非交易時段關注度預測次週報酬」研究設計移植到台灣股市，並利用一個橫跨 28 產業、

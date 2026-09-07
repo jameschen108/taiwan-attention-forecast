@@ -1,7 +1,11 @@
 # 原始資料體積過大，不進版控（PTT 封存 1.4G、TWSE 快取 347M）
+# 本機可 symlink 到研究版同名目錄；路徑本身也不進版控
 /data/pttweb/
+/data/pttweb
 /data/twse/
+/data/twse
 /data/raw/
+/data/raw
 /data/interim/
 /data/external/finmind_price/
 /data/external/finmind_shareholding/
@@ -30,3 +34,7 @@ venv/
 # 執行記錄（工作產物，非交付項）
 /logs/
 /data/raw/yahoo/
+
+# Forecast run artifacts (regenerate via python -m src.forecast.run)
+/data/forecast/
+/output/forecast/
