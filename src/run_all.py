@@ -193,6 +193,11 @@ def stage_analysis() -> dict:
     boot = makeup_days.wild_cluster_bootstrap(main)
     pd.DataFrame([boot]).to_csv(TABLES / "T10_makeup_bootstrap.csv", index=False)
 
+    print("[T13] 與原論文對照")
+    from src.analysis import paper_comparison
+    comp = paper_comparison.run(ROOT)
+    counts["T13_paper_comparison"] = len(comp)
+
     print("[T12] 穩健性")
     rob = robustness.run(panel, settings)
     robustness.summarize(rob).to_csv(TABLES / "T12_robustness.csv", index=False)
