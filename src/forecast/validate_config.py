@@ -7,7 +7,7 @@ from typing import Any
 
 
 UNSUPPORTED_KEYS = {
-    "generation_deadline": "scheduling not implemented (P3)",
+    "generation_deadline": "deadline logging only; no scheduler (see predict.py)",
     "require_snapshot": "universe snapshots not implemented (P4)",
     "hyperparameter_refresh": "annual refresh enforced in code but not separately validated",
     "history_shortfall": "handled per-feature in engineer_forecast_features",

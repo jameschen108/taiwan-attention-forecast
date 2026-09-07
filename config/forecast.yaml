@@ -86,3 +86,11 @@ paths:
   source_assumptions: docs/forecast/source_availability_assumptions.md
   data_dictionary: docs/forecast/data_dictionary.md
   feature_whitelist: config/forecast_feature_whitelist.yaml
+
+prospective:
+  predictions_path: data/forecast/prospective/predictions.parquet
+  skips_path: data/forecast/prospective/skips.csv
+  scores_path: data/forecast/prospective/scores.parquet
+  model_store: data/forecast/models
+  baseline_model: A
+  min_operational_weeks: 12
