@@ -1,10 +1,16 @@
 # 台股長尾關注度專案：未來趨勢預測方法與實作規格
 
+> **實作狀態（2026-09-07，不修改下方規格正文）**  
+> - **P0–P2 已實作**：時點面板（`data/forecast/panel_pit.parquet`）、特徵/標籤、Ridge A/B（P1）、邏輯斯/HGB 與 1w 回測（P2）。結論見 `output/forecast/VERDICT.md`、`VERDICT_P2.md`。  
+> - **P1 預先登記結論**：PTT（B）未穩定優於價格基準（A）；`pre_registered_gain=false`。  
+> - **P3/P4 未開始**：前瞻每週預測紀錄、擴充資料來源與模型保存。  
+> - 規格鏡像副本：`/Users/jameschen/GItHub/未來趨勢預測方法與實作規格.md`（與本檔 MD5 相同）。
+
 版本：1.0  
 日期：2026-09-07  
 對象：`taiwan-attention-long-tail`  
 檢視版本：`5142a7c9305b43767e702891819d14cae2acf8fc`  
-文件性質：改造設計與驗收規格；尚未實作、訓練或取得新的預測績效。
+文件性質：改造設計與驗收規格；P0–P2 已依此完成首輪評估，P3/P4 尚未實作。
 
 ## 1. 目標與核心決策
 

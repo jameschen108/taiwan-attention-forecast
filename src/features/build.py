@@ -12,7 +12,7 @@ import numpy as np
 import pandas as pd
 import yaml
 
-from src.features.attention import build_attention_panel
+from src.features.attention import build_attention_panel, build_attention_panel_post_listing
 from src.features.imbalance import abnormal_turnover, weekly_non_inst_roi
 from src.features.sessions import week_of
 
@@ -192,6 +192,124 @@ def build_panel(matches_path: Path, daily_path: Path, universe_path: Path,
 
     print(f"panel {len(panel):,} 列 × {panel['ticker'].nunique()} 檔 × "
           f"{panel['week'].nunique()} 週；上市前剔除 {n_dropped:,} 列")
+    return panel
+
+
+def build_panel_forecast(
+    matches_path: Path,
+    daily_path: Path,
+    universe_path: Path,
+    trading_days_path: Path,
+    settings_path: Path,
+    out_path: Path,
+    audit_dir: Path,
+    *,
+    post_listing_attention: bool = True,
+) -> pd.DataFrame:
+    """Build forecast PIT panel: post-listing attention warm-up, separate from research."""
+    settings = yaml.safe_load(Path(settings_path).read_text(encoding="utf-8"))
+    smp = settings["sample"]
+
+    uni = pd.read_csv(universe_path, dtype={"ticker": str})
+    uni["listing_date"] = pd.to_datetime(uni["listing_date"])
+    matches = pd.read_parquet(matches_path)
+    if att_cfg_exclude_bulk(settings) and "is_bulk_listing" in matches.columns:
+        matches = matches[~matches["is_bulk_listing"]].copy()
+    daily = pd.read_parquet(daily_path)
+    cal = pd.read_csv(trading_days_path, parse_dates=["date"])
+    trading_days = {d.date() for d in cal["date"]}
+
+    start, end = pd.Timestamp(smp["main_start"]), pd.Timestamp(smp["main_end"])
+    weeks = pd.date_range(week_of(start), week_of(end), freq="7D")
+
+    listing_s = uni.set_index("ticker")["listing_date"]
+    if post_listing_attention:
+        att = build_attention_panel_post_listing(
+            matches, weeks, listing_s, settings,
+        )
+    else:
+        att = build_attention_panel(matches, weeks, uni["ticker"].tolist(), settings)
+        att = att.reset_index()
+        att = att[att["week"] >= att["ticker"].map(listing_s).map(week_of)].copy()
+
+    market = _weekly_market(daily, trading_days, settings)
+    panel = att.merge(market, on=["ticker", "week"], how="left")
+    panel = panel.merge(
+        uni[["ticker", "name_short", "sector", "listing_date", "venue", "is_ky"]],
+        on="ticker", how="left",
+    )
+
+    week_days = (pd.Series(sorted(trading_days))
+                 .map(lambda d: week_of(d)).value_counts().sort_index())
+    panel["week_n_trading_days"] = panel["week"].map(week_days).fillna(0).astype(int)
+    panel["is_incomplete_week"] = (
+        panel["week_n_trading_days"] < settings["returns"]["min_trading_days_per_week"])
+    makeup = set(cal.loc[cal["is_makeup_saturday"], "date"].map(lambda d: week_of(d)))
+    panel["is_makeup_saturday_week"] = panel["week"].isin(makeup)
+
+    panel = panel.sort_values(["ticker", "week"]).reset_index(drop=True)
+    g = panel.groupby("ticker", sort=False)
+    for src, dst in [("ret", "ret_next"), ("non_inst_roi", "non_inst_roi_next")]:
+        nxt_week = g["week"].shift(-1)
+        ok = nxt_week == panel["week"] + pd.Timedelta(days=7)
+        panel[dst] = g[src].shift(-1).where(ok)
+    panel["abn_turnover"] = g["turnover"].transform(lambda s: abnormal_turnover(s))
+    nxt_week = g["week"].shift(-1)
+    ok = nxt_week == panel["week"] + pd.Timedelta(days=7)
+    panel["turnover_next"] = g["abn_turnover"].shift(-1).where(ok)
+    for lag, name in [(1, "ret_lag1"), (4, "ret_lag4"), (25, "ret_lag25")]:
+        if lag == 1:
+            panel[name] = g["ret"].shift(1)
+        else:
+            panel[name] = g["ret"].transform(
+                lambda s, k=lag: s.shift(1).rolling(k, min_periods=max(2, k // 2)).mean())
+    panel["non_inst_roi_lag1"] = g["non_inst_roi"].shift(1)
+    panel["turnover_lag1"] = g["abn_turnover"].shift(1)
+    for h in range(2, 9):
+        nxt = g["week"].shift(-h)
+        ok_h = nxt == panel["week"] + pd.Timedelta(days=7 * h)
+        panel[f"ret_fwd{h}"] = g["ret"].shift(-h).where(ok_h)
+
+    inst_cfg = settings["institutions"]
+    panel["regime_price_limit_10pct"] = panel["week"] >= pd.Timestamp(
+        inst_cfg["price_limit_change"])
+    panel["regime_continuous_trading"] = panel["week"] >= pd.Timestamp(
+        inst_cfg["continuous_trading"])
+    panel["regime_odd_lot"] = panel["week"] >= pd.Timestamp(inst_cfg["odd_lot_trading"])
+    panel["listing_age_years"] = (
+        (panel["week"] - panel["listing_date"]).dt.days / 365.25)
+
+    cfg = yaml.safe_load(Path("config/universe.yaml").read_text(encoding="utf-8"))
+    code_only = set(cfg.get("code_only_tickers", []))
+    panel["is_code_only_matched"] = panel["ticker"].isin(code_only)
+
+    sec = panel.groupby(["sector", "week"])["abn_attention_weekend"]
+    panel["sector_abn_att_weekend_sum"] = sec.transform("sum")
+    panel["sector_n"] = sec.transform("count")
+    panel["sector_peer_abn_att_weekend"] = (
+        (panel["sector_abn_att_weekend_sum"] - panel["abn_attention_weekend"].fillna(0))
+        / (panel["sector_n"] - 1).replace(0, np.nan))
+    panel["abn_att_weekend_rel_sector"] = (
+        panel["abn_attention_weekend"]
+        - panel.groupby(["sector", "week"])["abn_attention_weekend"].transform("mean"))
+
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    panel.to_parquet(out_path, index=False)
+
+    audit_dir.mkdir(parents=True, exist_ok=True)
+    pd.DataFrame([{
+        "n_rows": len(panel),
+        "n_tickers": panel["ticker"].nunique(),
+        "n_weeks": panel["week"].nunique(),
+        "post_listing_attention": post_listing_attention,
+        "first_week": str(panel["week"].min().date()),
+        "last_week": str(panel["week"].max().date()),
+        "n_dense_rows": int((panel["sparsity_tier"] == "dense").sum()),
+        "n_sparse_rows": int((panel["sparsity_tier"] == "sparse").sum()),
+        "n_silent_rows": int((panel["sparsity_tier"] == "silent").sum()),
+    }]).to_csv(audit_dir / "panel_pit_summary.csv", index=False)
+
+    print(f"forecast panel_pit {len(panel):,} rows → {out_path}")
     return panel
 
 

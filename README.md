@@ -7,29 +7,37 @@
 - 研究版本機路徑：`/Users/jameschen/GItHub/taiwan-attention-long-tail`
 - 目前尚無獨立 `origin`；研究遠端僅作參考，請勿推送回研究版
 
-## 預測管線（P0 / P1）
+## 預測管線（P0–P2）
 
 ```bash
-pip install -r requirements.txt
-python3 -m src.forecast.run          # 建 features/labels + 2020–2024 Ridge A/B
-python3 -m src.forecast.run_p2        # P2：機率、4w HGB、交易回測（需先跑 P1）
-python3 -m pytest tests/test_forecast_p0.py tests/test_forecast_p2.py -q
+python3.12 -m venv .venv && .venv/bin/pip install -r requirements.txt
+
+# 預測專用時點資料（研究面板不動）
+.venv/bin/python -m src.forecast.build_pit_data
+
+.venv/bin/python -m src.forecast.run          # P1：Ridge A/B + 評估
+.venv/bin/python -m src.forecast.run_p2         # P2：機率、HGB、回測（需先跑 P1）
+.venv/bin/python -m pytest tests/ -q            # 136 passed, 1 skipped（Python 3.12 venv）
 ```
 
 產出：
 
 | 路徑 | 內容 |
 |---|---|
+| `data/forecast/panel_pit.parquet` | 預測專用時點面板（無持股 bfill、上市後才進滾動窗） |
 | `data/forecast/features.parquet` | 時點特徵（無未來標籤欄） |
 | `data/forecast/labels.parquet` | 1w 超額報酬 vs 0050 |
-| `data/forecast/predictions.parquet` | 可追溯樣本外預測 |
+| `data/forecast/predictions.parquet` | 可追溯樣本外預測（含 `generated_at` / `horizon` / `model_version`） |
 | `output/forecast/VERDICT.md` | A/B 主比較結論 |
+| `output/forecast/VERDICT_P2.md` | P2 回測、0050 基準、成交率診斷 |
+| `output/forecast/execution_diagnostics.csv` | 逐週成交率與未成交原因 |
 | `output/forecast/evaluation_weekly.csv` | 逐週 Rank IC / ΔIC |
 
 P1 預先登記成功條件見規格 §17.2：B 相對 A 的 ΔIC 需穩定為正。  
-目前開發評估結果寫在 `output/forecast/VERDICT.md`（實驗完成 ≠ 宣稱可獲利）。
+目前評估結果寫在 `output/forecast/VERDICT.md`（實驗完成 ≠ 宣稱可獲利）。
 
-下方文件仍描述**研究繼承狀態**。預測實作以 `FORECAST_SPEC` 為準，並與研究管線分離。
+規格全文：[`docs/FORECAST_SPEC.md`](docs/FORECAST_SPEC.md)（與 `/Users/jameschen/GItHub/未來趨勢預測方法與實作規格.md` 內容相同）。  
+下方文件仍描述**研究繼承狀態**；預測實作以 `FORECAST_SPEC` 為準，並與研究管線分離。
 
 ---
 
@@ -55,7 +63,7 @@ P1 預先登記成功條件見規格 §17.2：B 相對 A 的 ΔIC 需穩定為�
 | 項目 | 狀態 |
 |---|---|
 | 管線 | 8 階段，一條指令從 raw 重建全部輸出，**實測 339 秒** |
-| 測試 | **113 passed**, 1 skipped |
+| 測試 | **136 passed**, 1 skipped |
 | 面板 | 123,828 列 × **260 檔** × 506 週（2015-05-03 ~ 2025-01-05） |
 | 驗收門檻 | **18/20 通過**（未通過兩項同一根因：授權資料未取得） |
 | 產出 | 表格 T1–T13 ＋ R15 ＋ T7M、圖 F1–F6、17 份稽核報告 |
@@ -95,7 +103,7 @@ P1 預先登記成功條件見規格 §17.2：B 相對 A 的 ΔIC 需穩定為�
 ```bash
 pip install -r requirements.txt        # python >= 3.10
 python3 -m src.run_all                 # 從 raw 重建全部輸出（339 秒）
-python3 -m pytest tests/ -q            # 113 passed
+python3 -m pytest tests/ -q            # 136 passed, 1 skipped
 ```
 
 各階段可獨立重跑（除錯用）：
@@ -382,6 +390,8 @@ tests/      113 項回歸測試
 
 ## 12. 下一步
 
+### 研究管線（PRD / 論文）
+
 依邊際價值排序：
 
 1. **新聞管道**（鉅亨網，方案已驗證）——一次解掉兩個未通過的驗收門檻：
@@ -392,6 +402,17 @@ tests/      113 項回歸測試
    證據已備妥（550 筆逐筆命中片段與上下文），建議優先複核 `ambiguous` 案例。
 3. **取得 TEJ 授權資料**——解除全部 `diagnostic` 標記。
 4. H7 若要復活，需要一個**外生**的關注度衝擊，改匹配規格沒有用。
+
+### 預測管線（FORECAST_SPEC §16）
+
+P0–P2 已實作並重跑時點面板；結論見 `output/forecast/VERDICT*.md`。
+
+| 階段 | 內容 | 狀態 |
+|---|---|---|
+| P3 | 前瞻紀錄（`predict.py`、每週快照、不可改寫預測史） | 未開始 |
+| P4 | 擴充來源（新聞、月營收、歷史時點宇宙、`universe.py`、`folds.parquet`） | 未開始 |
+
+P3 需 PTT 封存更新至可產生「當週」預測；P4 與研究管線新聞/TEJ 工作可部分共用資料來源，但驗收規格獨立。
 
 ---
 

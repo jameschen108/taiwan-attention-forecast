@@ -18,6 +18,23 @@ from src.forecast.time_contract import (
 )
 
 
+def _count_trading_sessions(
+    entry_at: pd.Timestamp | pd.NaT,
+    exit_at: pd.Timestamp | pd.NaT,
+    trading_days_sorted: list[dt.date],
+) -> float:
+    """Count unique market sessions in [entry_at, exit_at] inclusive."""
+    import bisect
+
+    if pd.isna(entry_at) or pd.isna(exit_at):
+        return np.nan
+    start = pd.Timestamp(entry_at).date()
+    end = pd.Timestamp(exit_at).date()
+    lo = bisect.bisect_left(trading_days_sorted, start)
+    hi = bisect.bisect_right(trading_days_sorted, end)
+    return float(hi - lo)
+
+
 def _period_adj_return_from_group(
     grp: pd.DataFrame,
     entry_at: pd.Timestamp,
@@ -105,18 +122,12 @@ def _build_horizon_labels(
     df[y_excess] = df[y_stock] - df[y_bench]
     df[y_out] = np.where(df[y_excess].isna(), np.nan, (df[y_excess] > 0).astype(float))
 
-    # Trading days in hold period (unique entry/exit only)
+    # Trading days in hold period: unique calendar sessions (not ticker-day rows)
     day_map: dict[tuple, float] = {}
     for ent, ex in zip(df["entry_at"], df["label_end_at"]):
         key = (ent, ex)
         if key not in day_map:
-            if pd.isna(ent) or pd.isna(ex):
-                day_map[key] = np.nan
-            else:
-                day_map[key] = float(
-                    ((stock_daily["date"] >= pd.Timestamp(ent))
-                     & (stock_daily["date"] <= pd.Timestamp(ex))).sum()
-                )
+            day_map[key] = _count_trading_sessions(ent, ex, trading_days_sorted)
     df["n_trading_days"] = [day_map[(e, x)] for e, x in zip(df["entry_at"], df["label_end_at"])]
 
     status = np.full(len(df), "ok", dtype=object)

@@ -286,7 +286,12 @@ class HGBFitResult:
 
 def _hgb_pipeline(n_features: int, params: dict, seed: int) -> Pipeline:
     pre = SimpleImputer(strategy="median", add_indicator=True)
-    model = HistGradientBoostingRegressor(random_state=seed, **params)
+    hgb_params = {k: v for k, v in params.items() if k != "early_stopping"}
+    if "early_stopping" not in params:
+        hgb_params["early_stopping"] = False
+    else:
+        hgb_params["early_stopping"] = bool(params["early_stopping"])
+    model = HistGradientBoostingRegressor(random_state=seed, **hgb_params)
     return Pipeline([
         ("imputer", pre),
         ("model", model),

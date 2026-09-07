@@ -23,6 +23,15 @@ def apply_calibrator(calibrator: LogisticRegression, y_prob: np.ndarray) -> np.n
     return calibrator.predict_proba(y_prob.reshape(-1, 1))[:, 1]
 
 
+def fit_calibrator_from_probs(y_true: np.ndarray, y_prob: np.ndarray) -> LogisticRegression | None:
+    """Fit Platt scaler when enough samples exist."""
+    mask = np.isfinite(y_true) & np.isfinite(y_prob)
+    y_true, y_prob = y_true[mask], y_prob[mask]
+    if len(y_true) < 100 or len(np.unique(y_true)) < 2:
+        return None
+    return fit_sigmoid_calibrator(y_true, y_prob)
+
+
 def brier_score(y_true: np.ndarray, y_prob: np.ndarray) -> float:
     return float(np.mean((y_prob - y_true) ** 2))
 

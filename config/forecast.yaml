@@ -26,8 +26,8 @@ data:
   ptt_incomplete_action: use_validated_price_model_or_skip
   price_incomplete_action: skip_affected_predictions
   permit_backward_fill: false
-  panel_path: data/processed/panel.parquet
-  daily_path: data/interim/market_daily.parquet
+  panel_path: data/forecast/panel_pit.parquet
+  daily_path: data/forecast/market_daily_pit.parquet
   trading_days_path: data/interim/trading_days.csv
   benchmark_price_path: data/raw/finmind/price/0050.json
   output_dir: data/forecast
@@ -54,7 +54,7 @@ validation:
   min_names_per_ic_week: 30
   bootstrap_block_weeks: 8
   bootstrap_sensitivity_block_weeks: [4, 13]
-  bootstrap_repetitions: 200  # P1 先用較小重抽加速；正式報告可升至 2000
+  bootstrap_repetitions: 2000
   seed: 42
 
 models:
@@ -67,10 +67,12 @@ models:
     max_leaf_nodes: 15
     min_samples_leaf: 100
     l2_regularization: 10
+    early_stopping: false
 
 backtest:
   enabled_horizons: [1w]
   initial_cash_twd: 1000000
+  sensitivity_initial_cash_twd: 10000000
   top_k: 20
   max_weight_per_name: 0.05
   min_adv20_twd: 5000000

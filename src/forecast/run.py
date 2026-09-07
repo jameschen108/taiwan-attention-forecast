@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import time
+from datetime import datetime, timezone
 from typing import Any
 
 import pandas as pd
@@ -12,8 +13,12 @@ from src.forecast.config import load_forecast_config, resolve_path
 from src.forecast.dataset import build_forecast_tables, join_xy
 from src.forecast.evaluate import (
     block_bootstrap_mean,
+    coverage_metrics,
     paired_delta_ic,
+    regression_error_metrics,
+    stability_breakdown,
     summarize_ics,
+    top_decile_metrics,
     weekly_rank_ic,
     year_breakdown,
 )
@@ -27,11 +32,14 @@ from src.forecast.splits import (
     refit_schedule,
 )
 from src.forecast.train import constant_predictor, fit_ridge, predict_frame, select_alpha_inner
+from src.forecast.validate_config import assert_data_paths, validate_forecast_config
 
 
 def run_p1_experiment(cfg: dict[str, Any] | None = None) -> dict[str, Any]:
     t0 = time.time()
     cfg = cfg or load_forecast_config()
+    assert_data_paths(cfg)
+    cfg_warnings = validate_forecast_config(cfg)
     out_dir = resolve_path(cfg, "output_dir")
     report_dir = resolve_path(cfg, "report_dir")
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -53,6 +61,8 @@ def run_p1_experiment(cfg: dict[str, Any] | None = None) -> dict[str, Any]:
     min_names = int(val["min_names_per_ic_week"])
     every = int(val["refit_every_prediction_weeks"])
     a_cols, b_cols, _ = feature_lists()
+    generated_at = datetime.now(timezone.utc).isoformat()
+    model_version = cfg["forecast"]["version"]
 
     all_as_ofs = as_of_list(ja)
     pred_rows: list[dict] = []
@@ -108,6 +118,9 @@ def run_p1_experiment(cfg: dict[str, Any] | None = None) -> dict[str, Any]:
             for i, row in slice_a.iterrows():
                 pred_rows.append({
                     "run_id": cfg["forecast"]["version"],
+                    "model_version": model_version,
+                    "horizon": "1w",
+                    "generated_at": generated_at,
                     "as_of": as_of,
                     "ticker": row["ticker"],
                     "week": row["week"],
@@ -150,6 +163,15 @@ def run_p1_experiment(cfg: dict[str, Any] | None = None) -> dict[str, Any]:
     ic2 = weekly_rank_ic(scored.rename(columns={"pred_m2": "pred"}), min_names=min_names)
     delta = paired_delta_ic(ic1, ic2, min_names=min_names)
 
+    bootstrap_sensitivity = {}
+    for bw in val.get("bootstrap_sensitivity_block_weeks", []):
+        bootstrap_sensitivity[str(bw)] = block_bootstrap_mean(
+            delta.loc[delta["sufficient"], "delta_ic"],
+            block_weeks=int(bw),
+            reps=int(val["bootstrap_repetitions"]),
+            seed=seed,
+        )
+
     weekly = delta[["as_of", "ic_a", "ic_b", "delta_ic", "n", "sufficient"]].copy()
     weekly["ic_m0"] = ic0.set_index("as_of").reindex(weekly["as_of"])["ic"].values
     weekly.to_csv(report_dir / "evaluation_weekly.csv", index=False)
@@ -167,6 +189,13 @@ def run_p1_experiment(cfg: dict[str, Any] | None = None) -> dict[str, Any]:
             reps=int(val["bootstrap_repetitions"]),
             seed=seed,
         ),
+        "delta_bootstrap_sensitivity": bootstrap_sensitivity,
+        "regression_m1": regression_error_metrics(scored, "pred_m1"),
+        "regression_m2": regression_error_metrics(scored, "pred_m2"),
+        "top_decile_m1": top_decile_metrics(scored, "pred_m1"),
+        "top_decile_m2": top_decile_metrics(scored, "pred_m2"),
+        "coverage": coverage_metrics(preds, scored, pred_col="pred_m1"),
+        "config_warnings": cfg_warnings,
         "alpha_a_by_year": {str(k): v for k, v in alpha_a_by_year.items()},
         "alpha_b_by_year": {str(k): v for k, v in alpha_b_by_year.items()},
         "n_predictions": int(len(preds)),
@@ -175,6 +204,10 @@ def run_p1_experiment(cfg: dict[str, Any] | None = None) -> dict[str, Any]:
     }
     by_year = year_breakdown(delta, "delta_ic")
     by_year.to_csv(report_dir / "evaluation_by_year.csv", index=False)
+    stability_breakdown(scored, "pred_m1").to_csv(
+        report_dir / "stability_by_sparsity_m1.csv", index=False)
+    stability_breakdown(scored, "pred_m2").to_csv(
+        report_dir / "stability_by_sparsity_m2.csv", index=False)
 
     dmean = summary["delta_B_minus_A"]["mean"]
     dboot = summary["delta_bootstrap"]

@@ -9,6 +9,8 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 
+from src.features.sessions import week_of
+
 
 def abnormal_attention(counts: pd.Series, lookback: int = 8,
                        min_periods: int = 8, transform: str = "log1p") -> pd.Series:
@@ -130,3 +132,84 @@ def build_attention_panel(matches: pd.DataFrame, weeks: pd.DatetimeIndex,
     # PRD §3.2.1 規則 2：回顧窗全零者另設虛擬變數吸收，不得當成 AbnAtt = 0
     panel["att_zero_base"] = panel["att_lookback_all_zero"].fillna(False).astype(int)
     return panel
+
+
+def build_attention_panel_post_listing(
+    matches: pd.DataFrame,
+    weeks: pd.DatetimeIndex,
+    listing_dates: pd.Series,
+    settings: dict,
+) -> pd.DataFrame:
+    """Like build_attention_panel but rolling windows exclude pre-listing weeks.
+
+    For each ticker, only weeks on/after listing week enter the grid and
+    rolling AbnAtt / 52w sparsity (forecast spec §7.2 warm-up fix).
+    """
+    att = settings["attention"]
+    spa = settings["sparsity"]
+    calendar_windows = ["weekday", "weekend"]
+    session_windows = ["intraday", "non_trading"]
+    efforts = ["high_effort", "mid_effort", "low_effort"]
+
+    listing_weeks = listing_dates.map(week_of)
+    tickers = listing_dates.index.tolist()
+
+    out_blocks = []
+    for ticker in tickers:
+        list_w = listing_weeks[ticker]
+        ticker_weeks = weeks[weeks >= list_w]
+        if len(ticker_weeks) == 0:
+            continue
+        idx = pd.MultiIndex.from_product([[ticker], ticker_weeks], names=["ticker", "week"])
+        panel = pd.DataFrame(index=idx)
+
+        def counts_for(mask: pd.Series, label: str) -> None:
+            sub = matches[(matches["ticker"] == ticker) & mask]
+            series = (sub.groupby("week").size()
+                      .reindex(ticker_weeks, fill_value=0).astype(float))
+            panel[f"att_{label}"] = series.values
+
+        m_t = matches["ticker"] == ticker
+        counts_for(m_t, "all")
+        for w in calendar_windows:
+            counts_for(m_t & (matches["window"] == w), w)
+        for w in session_windows:
+            counts_for(m_t & (matches["session"] == w), w)
+        for e in efforts:
+            counts_for(m_t & (matches["effort"] == e), e)
+            counts_for(m_t & (matches["effort"] == e) & (matches["window"] == "weekend"),
+                       f"{e}_weekend")
+            counts_for(m_t & (matches["effort"] == e) & (matches["window"] == "weekday"),
+                       f"{e}_weekday")
+
+        grp = panel.sort_index(level="week")
+        block = grp.copy()
+        for col in [c for c in grp.columns if c.startswith("att_")]:
+            label = col[len("att_"):]
+            block[f"abn_attention_{label}"] = abnormal_attention(
+                grp[col], att["lookback_weeks"], att["min_periods"], att["transform"]
+            ).values
+            if label in ("all", "weekend", "weekday"):
+                block[f"abn_attention_{label}_posonly"] = abnormal_attention(
+                    grp[col], att["lookback_weeks"], att["min_periods"], "log_positive"
+                ).values
+        sp = sparsity_fields(grp["att_all"], att["sparsity_lookback_weeks"],
+                             att["lookback_weeks"])
+        for col in sp.columns:
+            block[col] = sp[col].values
+        block["is_initiation_weekend"] = (
+            block["is_initiation"].values & (grp["att_weekend"].values > 0)
+        )
+        block["is_initiation_weekday"] = (
+            block["is_initiation"].values & (grp["att_weekday"].values > 0)
+        )
+        block["sparsity_tier"] = sparsity_tier(
+            block["att_nonzero_weeks_52"],
+            spa["dense_min_nonzero_weeks"], spa["silent_max_nonzero_weeks"],
+        ).values
+        block["att_zero_base"] = block["att_lookback_all_zero"].fillna(False).astype(int)
+        out_blocks.append(block.reset_index())
+
+    if not out_blocks:
+        return pd.DataFrame()
+    return pd.concat(out_blocks, ignore_index=False)

@@ -18,6 +18,7 @@ from src.forecast.time_contract import (
     is_mature_label,
     is_usable_observation,
 )
+from src.market.normalize import build_daily_panel
 
 
 TD = [
@@ -188,9 +189,8 @@ class TestInferenceWithoutLabel:
 
 class TestNoBfill:
     def test_permit_backward_fill_false_keeps_leading_nan(self, tmp_path):
-        # Minimal synthetic raw price + shareholding
-        raw = tmp_path / "raw" / "price"
-        raw.mkdir(parents=True)
+        raw = tmp_path / "raw"
+        (raw / "price").mkdir(parents=True)
         import json
         rows = [
             {"date": "2024-01-02", "stock_id": "1101", "Trading_Volume": 1000,
@@ -203,23 +203,31 @@ class TestNoBfill:
              "Trading_money": 10000, "open": 11, "max": 11, "min": 11, "close": 11,
              "Trading_turnover": 1},
         ]
-        (raw / "1101.json").write_text(json.dumps({
+        (raw / "price" / "1101.json").write_text(json.dumps({
             "dataset": "TaiwanStockPrice", "data_id": "1101", "data": rows,
         }), encoding="utf-8")
-        # Need enough tickers for calendar? build_daily_panel uses load_prices only from price dir
-        # Also need institutional - empty inst dir will fail. Patch by creating empty and using
-        # path that skips inst - load_institutional requires files.
-        # Simpler: unit-test the fill logic inline rather than full build_daily_panel.
-        daily = pd.DataFrame({
-            "ticker": ["1101"] * 3,
-            "date": pd.to_datetime(["2024-01-02", "2024-01-03", "2024-01-04"]),
-            "shares_outstanding": [np.nan, np.nan, 1000.0],
-            "foreign_holding_pct": [np.nan, 5.0, 5.0],
-        })
-        for col in ("foreign_holding_pct", "shares_outstanding"):
-            daily[col] = daily.groupby("ticker")[col].ffill()
-        # no bfill
-        assert pd.isna(daily.loc[0, "foreign_holding_pct"])
-        assert daily.loc[1, "foreign_holding_pct"] == 5.0
-        assert pd.isna(daily.loc[0, "shares_outstanding"])
-        assert daily.loc[2, "shares_outstanding"] == 1000.0
+        (raw / "inst").mkdir(parents=True, exist_ok=True)
+        (raw / "inst" / "1101.json").write_text(json.dumps({
+            "dataset": "TaiwanStockInstitutionalInvestorsBuySell",
+            "data_id": "1101",
+            "data": [
+                {"date": "2024-01-02", "stock_id": "1101", "name": "Foreign_Investor",
+                 "buy": 100, "sell": 50},
+            ],
+        }), encoding="utf-8")
+        sh = tmp_path / "shareholding.csv"
+        sh.write_text(
+            "ticker,date,foreign_holding_pct,shares_outstanding\n"
+            "1101,2024-01-04,5.0,1000\n"
+        )
+        out = tmp_path / "out"
+        audit = tmp_path / "audit"
+        daily = build_daily_panel(
+            raw, out, audit,
+            shareholding_csv=sh,
+            permit_backward_fill=False,
+        )
+        sub = daily[daily["ticker"] == "1101"].sort_values("date")
+        assert pd.isna(sub.iloc[0]["foreign_holding_pct"])
+        assert pd.isna(sub.iloc[0]["shares_outstanding"])
+        assert sub.iloc[2]["shares_outstanding"] == 1000.0

@@ -64,13 +64,19 @@ class TestBacktestAccounting:
         assert state.cash == 1_000_000
         assert state.positions == {}
 
-    def test_simulate_empty_predictions(self, tmp_path):
-        preds = pd.DataFrame(columns=[
-            "as_of", "ticker", "pred_m1", "label_status",
-        ])
+    def test_simulate_records_initial_nav(self, tmp_path):
+        preds = pd.DataFrame({
+            "as_of": [pd.Timestamp("2024-05-06")],
+            "ticker": ["1101"],
+            "pred_m1": [0.5],
+            "sparsity_tier": ["dense"],
+        })
         daily = pd.DataFrame({
-            "ticker": ["1101"], "date": [pd.Timestamp("2024-05-06")],
-            "adj_open": [10.0], "adj_close": [10.5], "value": [1e7],
+            "ticker": ["1101"] * 25,
+            "date": pd.date_range("2024-04-01", periods=25, freq="B"),
+            "adj_open": [10.0] * 25,
+            "adj_close": [10.5] * 25,
+            "value": [1e7] * 25,
         })
         labels = pd.DataFrame({
             "as_of": [pd.Timestamp("2024-05-06")], "ticker": ["1101"],
@@ -80,5 +86,6 @@ class TestBacktestAccounting:
         cost = tmp_path / "c.csv"
         cost.write_text("effective_from,fee_rate,fee_discount,tax_rate_sell,slippage_bps,min_fee_twd,lot_size\n"
                         "2020-01-01,0.001425,0.6,0.003,20,20,1000\n")
-        out = simulate_weekly_rank_strategy(preds, daily, labels, cost)
-        assert out["nav"].empty or out["metrics"]["final_nav"] == pytest.approx(1_000_000)
+        out = simulate_weekly_rank_strategy(preds, daily, labels, cost, sparsity_tiers=["dense"])
+        assert out["metrics"]["initial_nav"] == pytest.approx(1_000_000)
+        assert out["nav"].iloc[0]["nav"] == pytest.approx(1_000_000)
