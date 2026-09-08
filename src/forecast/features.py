@@ -25,10 +25,26 @@ def feature_lists(whitelist: dict[str, Any] | None = None) -> tuple[list[str], l
     wl = whitelist or load_whitelist()
     a = list(wl["A"])
     b_extra = list(wl["B_extra"])
-    # B = unique A + extras
     b = list(dict.fromkeys(a + b_extra))
     forbidden = list(dict.fromkeys(list(wl.get("forbidden", [])) + list(FORBIDDEN_ALWAYS)))
     return a, b, forbidden
+
+
+def feature_lists_full(whitelist: dict[str, Any] | None = None) -> dict[str, list[str]]:
+    wl = whitelist or load_whitelist()
+    a, b, forbidden = feature_lists(wl)
+    c = list(dict.fromkeys(a + list(wl.get("C_extra", []))))
+    d = list(dict.fromkeys(a + list(wl.get("D_extra", []))))
+    e = list(dict.fromkeys(a + list(wl.get("D_extra", [])) + list(wl.get("B_extra", []))))
+    return {"A": a, "B": b, "C": c, "D": d, "E": e, "forbidden": forbidden}
+
+
+def columns_for_set(feature_set: str, whitelist: dict[str, Any] | None = None) -> list[str]:
+    fl = feature_lists_full(whitelist)
+    key = feature_set.upper()
+    if key not in fl:
+        raise KeyError(f"unknown feature set {feature_set}")
+    return fl[key]
 
 
 def assert_no_forbidden(columns: list[str], forbidden: list[str]) -> None:

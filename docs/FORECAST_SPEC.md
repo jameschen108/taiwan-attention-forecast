@@ -4,7 +4,7 @@
 > - **P0–P2 已實作**：時點面板（`data/forecast/panel_pit.parquet`）、特徵/標籤、Ridge A/B（P1）、邏輯斯/HGB 與 1w 回測（P2）。結論見 `output/forecast/VERDICT.md`、`VERDICT_P2.md`。  
 > - **P1 預先登記結論**：PTT（B）未穩定優於價格基準（A）；`pre_registered_gain=false`。  
 > - **P3 已實作**：`src/forecast/predict.py` — append-only ledger、watchlist、成熟標籤評分、12 週運作報告（回放驗證 `operational_ready=true`）；真實前瞻需更新 PTT 封存。  
-> - **P4 未開始**：擴充資料來源與模型保存。  
+> - **P4 已實作**：`universe.py`、`folds.parquet`、`run_p4.py` 增量 Ridge（C/D/B vs A 已登記；E vs D 探索性）。來源已抓取；登記表 `output/forecast/experiment_registry.csv`。D 依 §17.2 記為未通過（bootstrap 下界 ≤ 0）；維持 A 為基準。  
 > - 規格鏡像副本：`/Users/jameschen/GItHub/未來趨勢預測方法與實作規格.md`（與本檔 MD5 相同）。
 
 版本：1.0  

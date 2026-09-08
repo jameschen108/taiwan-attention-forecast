@@ -16,7 +16,7 @@ from sklearn.preprocessing import StandardScaler
 
 from src.forecast.calibrate import brier_score
 from src.forecast.evaluate import weekly_rank_ic
-from src.forecast.features import feature_lists
+from src.forecast.features import feature_lists, feature_lists_full
 from src.forecast.splits import filter_mature_fast, inner_forward_blocks
 
 
@@ -125,7 +125,10 @@ def fit_ridge(
     sparsity_tiers: list[str] | None = None,
 ) -> FitResult:
     a_cols, b_cols, _ = feature_lists()
-    cols = a_cols if feature_set.upper() == "A" else b_cols
+    cols_map = feature_lists_full()
+    cols = cols_map.get(feature_set.upper())
+    if cols is None:
+        cols = a_cols if feature_set.upper() == "A" else b_cols
     tr = filter_mature_fast(train_df, fit_cutoff)
     if sparsity_tiers:
         tr = tr[tr["sparsity_tier"].isin(sparsity_tiers)]
@@ -248,7 +251,10 @@ def fit_logistic(
     y_col: str = "y_outperform_1w",
 ) -> LogisticFitResult:
     a_cols, b_cols, _ = feature_lists()
-    cols = a_cols if feature_set.upper() == "A" else b_cols
+    cols_map = feature_lists_full()
+    cols = cols_map.get(feature_set.upper())
+    if cols is None:
+        cols = a_cols if feature_set.upper() == "A" else b_cols
     tr = filter_mature_fast(train_df, fit_cutoff)
     if sparsity_tiers:
         tr = tr[tr["sparsity_tier"].isin(sparsity_tiers)]
@@ -308,7 +314,10 @@ def fit_hgb(
     y_col: str = "y_excess_1w",
 ) -> HGBFitResult:
     a_cols, b_cols, _ = feature_lists()
-    cols = a_cols if feature_set.upper() == "A" else b_cols
+    cols_map = feature_lists_full()
+    cols = cols_map.get(feature_set.upper())
+    if cols is None:
+        cols = a_cols if feature_set.upper() == "A" else b_cols
     tr = filter_mature_fast(train_df, fit_cutoff, y_col=y_col)
     if sparsity_tiers:
         tr = tr[tr["sparsity_tier"].isin(sparsity_tiers)]

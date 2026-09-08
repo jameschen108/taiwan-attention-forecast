@@ -9,7 +9,7 @@ from typing import Any
 import pandas as pd
 
 from src.forecast.config import load_forecast_config, load_whitelist, resolve_path
-from src.forecast.features import engineer_forecast_features, feature_lists
+from src.forecast.features import columns_for_set, engineer_forecast_features, feature_lists
 from src.forecast.labels import build_label_frame, load_or_build_benchmark_weekly
 from src.forecast.time_contract import as_of_from_feature_week
 
@@ -123,7 +123,10 @@ def join_xy(
 ) -> pd.DataFrame:
     """Join features with labels for a given horizon."""
     a_cols, b_cols, _ = feature_lists()
-    cols = a_cols if feature_set.upper() == "A" else b_cols
+    if feature_set.upper() in {"A", "B"}:
+        cols = a_cols if feature_set.upper() == "A" else b_cols
+    else:
+        cols = columns_for_set(feature_set)
     keys = ["ticker", "week", "as_of"]
     hz = horizon.lower()
     y_excess = f"y_excess_{hz}"

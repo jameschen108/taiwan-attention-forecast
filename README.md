@@ -19,7 +19,9 @@ python3.12 -m venv .venv && .venv/bin/pip install -r requirements.txt
 .venv/bin/python -m src.forecast.run_p2         # P2：機率、HGB、回測（需先跑 P1）
 .venv/bin/python -m src.forecast.predict        # P3：最新週前瞻預測（append-only ledger）
 .venv/bin/python -m src.forecast.predict --backfill-weeks 12  # 回放最近 12 週驗證運作
-.venv/bin/python -m pytest tests/ -q            # 139 passed, 1 skipped（Python 3.12 venv）
+.venv/bin/python -m src.forecast.run_p4          # P4：C/D/B vs A（已登記）+ E vs D（探索性）
+.venv/bin/python -m src.forecast.collect_month_revenue  # 可選：抓取 FinMind 月營收
+.venv/bin/python -m pytest tests/ -q            # 145 passed, 1 skipped（Python 3.12 venv）
 ```
 
 產出：
@@ -35,6 +37,8 @@ python3.12 -m venv .venv && .venv/bin/pip install -r requirements.txt
 | `output/forecast/PROSPECTIVE_STATUS.md` | P3 最近 12 週預測／跳過可追溯性 |
 | `data/forecast/prospective/predictions.parquet` | 不可改寫的前瞻預測 ledger |
 | `output/forecast/evaluation_weekly.csv` | 逐週 Rank IC / ΔIC |
+| `output/forecast/VERDICT_P4.md` | P4 增量來源比較（C/D/B vs A；E vs D 探索性） |
+| `output/forecast/experiment_registry.csv` | §17.2 登記門檻逐比較判定 |
 
 P1 預先登記成功條件見規格 §17.2：B 相對 A 的 ΔIC 需穩定為正。  
 目前評估結果寫在 `output/forecast/VERDICT.md`（實驗完成 ≠ 宣稱可獲利）。
@@ -66,7 +70,7 @@ P1 預先登記成功條件見規格 §17.2：B 相對 A 的 ΔIC 需穩定為�
 | 項目 | 狀態 |
 |---|---|
 | 管線 | 8 階段，一條指令從 raw 重建全部輸出，**實測 339 秒** |
-| 測試 | **139 passed**, 1 skipped |
+| 測試 | **145 passed**, 1 skipped |
 | 面板 | 123,828 列 × **260 檔** × 506 週（2015-05-03 ~ 2025-01-05） |
 | 驗收門檻 | **18/20 通過**（未通過兩項同一根因：授權資料未取得） |
 | 產出 | 表格 T1–T13 ＋ R15 ＋ T7M、圖 F1–F6、17 份稽核報告 |
@@ -413,7 +417,7 @@ P0–P2 已實作並重跑時點面板；結論見 `output/forecast/VERDICT*.md`
 | 階段 | 內容 | 狀態 |
 |---|---|---|
 | P3 | 前瞻紀錄（`predict.py`、每週快照、不可改寫預測史） | **已實作**（12 週回放 `operational_ready=true`；真實前瞻待 PTT 更新） |
-| P4 | 擴充來源（新聞、月營收、歷史時點宇宙、`universe.py`、`folds.parquet`） | 未開始 |
+| P4 | 擴充來源（新聞、月營收、E=月營收+PTT；`experiment_registry.csv`） | **已實作**（D 登記未通過；E vs D 探索性） |
 
 P3 需 PTT 封存更新至可產生「當週」預測；P4 與研究管線新聞/TEJ 工作可部分共用資料來源，但驗收規格獨立。
 

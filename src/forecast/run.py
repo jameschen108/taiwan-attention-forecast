@@ -15,6 +15,7 @@ from src.forecast.evaluate import (
     block_bootstrap_mean,
     coverage_metrics,
     paired_delta_ic,
+    registered_gain_gate,
     regression_error_metrics,
     stability_breakdown,
     summarize_ics,
@@ -209,18 +210,19 @@ def run_p1_experiment(cfg: dict[str, Any] | None = None) -> dict[str, Any]:
     stability_breakdown(scored, "pred_m2").to_csv(
         report_dir / "stability_by_sparsity_m2.csv", index=False)
 
-    dmean = summary["delta_B_minus_A"]["mean"]
     dboot = summary["delta_bootstrap"]
     year_pos = int((by_year["mean"] > 0).sum()) if not by_year.empty else 0
-    b_ic = summary["m2_B"]["mean"]
-    gain = bool(
-        pd.notna(b_ic) and b_ic > 0
-        and pd.notna(dmean) and dmean > 0
-        and pd.notna(dboot["ci_low"]) and dboot["ci_low"] > 0
-        and year_pos >= 3
+    gate = registered_gain_gate(
+        summary["m2_B"],
+        summary["delta_B_minus_A"],
+        dboot,
+        year_pos,
+        len(by_year),
     )
+    gain = gate["gain"]
     summary["pre_registered_gain"] = gain
     summary["year_positive_delta_count"] = year_pos
+    summary["registered_gain_gate"] = gate
 
     (report_dir / "evaluation_summary.json").write_text(
         json.dumps(summary, ensure_ascii=False, indent=2, default=str) + "\n",

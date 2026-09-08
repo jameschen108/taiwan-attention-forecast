@@ -197,6 +197,37 @@ def stability_breakdown(
     return pd.DataFrame(rows)
 
 
+def registered_gain_gate(
+    candidate_ic: dict | float,
+    delta_summary: dict,
+    bootstrap: dict,
+    year_positive: int,
+    n_years: int,
+    *,
+    min_years_positive: int = 3,
+) -> dict:
+    """Apply FORECAST_SPEC §17.2 pre-registered historical gain rule."""
+    c_ic = candidate_ic["mean"] if isinstance(candidate_ic, dict) else candidate_ic
+    dmean = delta_summary["mean"] if isinstance(delta_summary, dict) else delta_summary
+    ci_low = bootstrap.get("ci_low")
+
+    gate_candidate_ic = bool(pd.notna(c_ic) and c_ic > 0)
+    gate_mean_delta = bool(pd.notna(dmean) and dmean > 0)
+    gate_boot_low = bool(pd.notna(ci_low) and ci_low > 0)
+    gate_years = year_positive >= min_years_positive
+    gain = gate_candidate_ic and gate_mean_delta and gate_boot_low and gate_years
+
+    return {
+        "gate_candidate_ic": gate_candidate_ic,
+        "gate_mean_delta": gate_mean_delta,
+        "gate_boot_low": gate_boot_low,
+        "gate_years": gate_years,
+        "gain": gain,
+        "years_positive": year_positive,
+        "n_years": n_years,
+    }
+
+
 def year_breakdown(weekly: pd.DataFrame, value_col: str = "delta_ic") -> pd.DataFrame:
     w = weekly.copy()
     w["year"] = pd.to_datetime(w["as_of"]).dt.year

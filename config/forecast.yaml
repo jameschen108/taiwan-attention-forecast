@@ -87,6 +87,12 @@ paths:
   data_dictionary: docs/forecast/data_dictionary.md
   feature_whitelist: config/forecast_feature_whitelist.yaml
 
+p4:
+  news_path: data/forecast/supplemental/news_matched.parquet
+  month_revenue_raw_dir: data/raw/finmind/month_revenue
+  month_revenue_cache: data/forecast/supplemental/monthly_revenue.parquet
+  enabled_sources: [news, month_revenue]
+
 prospective:
   predictions_path: data/forecast/prospective/predictions.parquet
   skips_path: data/forecast/prospective/skips.csv

@@ -46,6 +46,22 @@ B_extra:
   - is_code_only_matched
   - missing_attention_window
 
+# C：A + 新聞計數（publish_at 在 as_of 前）
+C_extra:
+  - log1p_news_count_1w
+  - log1p_news_count_4w
+  - missing_news
+
+# D：A + 月營收（按公告日，非營收月份）
+D_extra:
+  - revenue_yoy_latest
+  - revenue_mom_latest
+  - log_revenue_latest
+  - days_since_revenue_announce
+  - missing_revenue
+
+# E：A + 月營收 + PTT（程式上為 D_extra ∪ B_extra；探索性 E vs D 檢定用）
+
 # 絕對禁止進入 X（標籤／未來欄）
 forbidden:
   - ret_next
