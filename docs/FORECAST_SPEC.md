@@ -4,8 +4,7 @@
 > - **P0–P2 已實作**：時點面板（`data/forecast/panel_pit.parquet`）、特徵/標籤、Ridge A/B（P1）、邏輯斯/HGB 與 1w 回測（P2）。結論見 `output/forecast/VERDICT.md`、`VERDICT_P2.md`。  
 > - **P1 預先登記結論**：PTT（B）未穩定優於價格基準（A）；`pre_registered_gain=false`。  
 > - **P3 已實作**：`src/forecast/predict.py` — append-only ledger、watchlist、成熟標籤評分、12 週運作報告（回放驗證 `operational_ready=true`）；真實前瞻需更新 PTT 封存。  
-> - **P4 已實作**：`universe.py`、`folds.parquet`、`run_p4.py` 增量 Ridge（C/D/B vs A 已登記；E vs D 探索性）。來源已抓取；登記表 `output/forecast/experiment_registry.csv`。D 依 §17.2 記為未通過（bootstrap 下界 ≤ 0）；維持 A 為基準。  
-> - 規格鏡像副本：`/Users/jameschen/GItHub/未來趨勢預測方法與實作規格.md`（與本檔 MD5 相同）。
+> - **P4 已實作**：`universe.py`、`folds.parquet`、`run_p4.py` 增量 Ridge（C/D/B vs A 已登記；E vs D 探索性）。來源已抓取；登記表 `output/forecast/experiment_registry.csv`。D 依 §17.2 記為未通過（bootstrap 下界 ≤ 0）；維持 A 為基準。
 
 版本：1.0  
 日期：2026-09-07  
@@ -505,7 +504,7 @@ NAV = cash + marked_position_value + receivables
 
 ## 13. 原始碼修改地圖
 
-以下路徑均相對於 `/Users/jameschen/GItHub/taiwan-attention-long-tail`。這是待實作清單，不代表檔案已被修改。
+以下路徑均相對於本專案根目錄。這是待實作清單，不代表檔案已被修改。
 
 | 檔案／位置 | 改造工作 | 驗收重點 |
 |---|---|---|
@@ -792,18 +791,16 @@ simulate_orders_from_saved_predictions()
 
 ### 20.1 專案內依據
 
-專案根目錄：`/Users/jameschen/GItHub/taiwan-attention-long-tail`。
-
-- [研究定義 PROJECT.md](/Users/jameschen/GItHub/taiwan-attention-long-tail/PROJECT.md)：週定義、特徵、標籤與研究設計。
-- [研究限制 LIMITATIONS.md](/Users/jameschen/GItHub/taiwan-attention-long-tail/LIMITATIONS.md)：事後宇宙、PTT 期間、推文與資料缺口；現有結果須連同這些限制理解。
-- [現有發現 FINDINGS.md](/Users/jameschen/GItHub/taiwan-attention-long-tail/FINDINGS.md)：報酬、交易活躍度與投組的 diagnostic 判讀。
-- [特徵面板 build.py](/Users/jameschen/GItHub/taiwan-attention-long-tail/src/features/build.py)：現有週資料與領先標籤。
-- [注意力 attention.py](/Users/jameschen/GItHub/taiwan-attention-long-tail/src/features/attention.py)：異常關注度與稀疏度。
-- [時段 sessions.py](/Users/jameschen/GItHub/taiwan-attention-long-tail/src/features/sessions.py)：最新文章對未來交易日的依賴。
-- [價格處理 normalize.py](/Users/jameschen/GItHub/taiwan-attention-long-tail/src/market/normalize.py)：持股填補、還原價與日資料。
-- [迴歸 regressions.py](/Users/jameschen/GItHub/taiwan-attention-long-tail/src/analysis/regressions.py)：全樣本標準化與雙向固定效果。
-- [投組 portfolios.py](/Users/jameschen/GItHub/taiwan-attention-long-tail/src/analysis/portfolios.py)：依未來報酬缺值篩選及名單換手成本。
-- [面板摘要](/Users/jameschen/GItHub/taiwan-attention-long-tail/audit/panel_summary.csv) 與 [分析就緒旗標](/Users/jameschen/GItHub/taiwan-attention-long-tail/data/processed/analysis_readiness.csv)：本次核對的規模與 diagnostic 狀態。
+- [研究定義 PROJECT.md](../PROJECT.md)：週定義、特徵、標籤與研究設計。
+- [研究限制 LIMITATIONS.md](../LIMITATIONS.md)：事後宇宙、PTT 期間、推文與資料缺口；現有結果須連同這些限制理解。
+- [現有發現 FINDINGS.md](../FINDINGS.md)：報酬、交易活躍度與投組的 diagnostic 判讀。
+- [特徵面板 build.py](../src/features/build.py)：現有週資料與領先標籤。
+- [注意力 attention.py](../src/features/attention.py)：異常關注度與稀疏度。
+- [時段 sessions.py](../src/features/sessions.py)：最新文章對未來交易日的依賴。
+- [價格處理 normalize.py](../src/market/normalize.py)：持股填補、還原價與日資料。
+- [迴歸 regressions.py](../src/analysis/regressions.py)：全樣本標準化與雙向固定效果。
+- [投組 portfolios.py](../src/analysis/portfolios.py)：依未來報酬缺值篩選及名單換手成本。
+- [面板摘要](../audit/panel_summary.csv) 與 [分析就緒旗標](../data/processed/analysis_readiness.csv)：本次核對的規模與 diagnostic 狀態。
 
 ### 20.2 外部方法依據
 
